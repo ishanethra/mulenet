@@ -50,6 +50,37 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+const termDefinitions: Record<string, string> = {
+  velocity: "Speed and frequency of transactions over a short period.",
+  liquidity: "Ratio of funds immediately withdrawn vs kept in the account (Pass-through).",
+  behavior: "Deviations from the account's historical baseline spending patterns.",
+  network: "Graph connections to known suspicious or high-risk entities.",
+  peer_deviation: "How much this account differs from similar customer profiles.",
+  drift: "Gradual escalation in transaction size or frequency over time.",
+  aml: "Algorithmic matches against known Anti-Money Laundering typologies.",
+  "Velocity Spike": "Sudden, rapid bursts of high-value transactions.",
+  "Offshore Wire": "Funds being transferred to international or high-risk jurisdictions.",
+  "IP Mismatch": "Logins originating from different countries or hidden VPN nodes.",
+  "Structuring": "Breaking large transactions into smaller ones to avoid detection limits.",
+  "Dormancy Break": "A long-inactive account suddenly receiving or sending large funds.",
+};
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const term = label || payload[0].payload?.metric || payload[0].payload?.feature || "Metric";
+    const def = termDefinitions[term] || termDefinitions[term.toLowerCase()] || "Indicates risk factor weight.";
+    
+    return (
+      <div className="bg-[#111] border border-[#333] p-3 rounded shadow-xl max-w-[220px] z-50">
+        <p className="text-[#60a5fa] font-mono text-xs font-bold mb-1 uppercase tracking-wide">{term}</p>
+        <p className="text-gray-300 text-[11px] leading-relaxed">{def}</p>
+        <p className="text-red-400 font-mono text-[10px] mt-2">Impact: {payload[0].value}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const nav = [
   { label: "Command Center", icon: ShieldAlert },
   { label: "Fraud DNA", icon: Radar },
@@ -478,7 +509,7 @@ export default function Home() {
                       <PolarGrid stroke="#222" strokeDasharray="3 3" />
                       <PolarAngleAxis dataKey="metric" tick={{ fill: '#888', fontSize: 11, fontFamily: 'monospace' }} />
                       <RadarChartShape name="Risk" dataKey="value" stroke="#60a5fa" strokeWidth={2} fill="#60a5fa" fillOpacity={0.15} />
-                      <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '4px', color: 'white', fontFamily: 'monospace' }} itemStyle={{ color: '#60a5fa' }} />
+                      <Tooltip content={<CustomTooltip />} cursor={false} />
                     </RadarChart>
                   </ResponsiveContainer>
                 </div>
@@ -497,7 +528,7 @@ export default function Home() {
                         <BarChart layout="vertical" data={featureImportance.slice(0, 5)} margin={{ top: 0, right: 20, left: 0, bottom: 0 }}>
                           <XAxis type="number" hide />
                           <YAxis dataKey="feature" type="category" width={140} tick={{ fill: '#888', fontSize: 10, fontFamily: 'monospace' }} axisLine={false} tickLine={false} />
-                          <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '4px', color: 'white', fontFamily: 'monospace', fontSize: 12 }} itemStyle={{ color: '#ef4444' }} cursor={{ fill: '#ffffff0a' }} />
+                          <Tooltip content={<CustomTooltip />} cursor={{ fill: '#ffffff0a' }} />
                           <Bar dataKey="value" fill="#ef4444" radius={[0, 4, 4, 0]} barSize={12} />
                         </BarChart>
                       </ResponsiveContainer>
