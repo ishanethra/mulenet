@@ -39,6 +39,8 @@ def organization_dataset_path() -> Path:
         configured if configured.is_absolute() else project_root / configured,
         project_root / "dataset.csv",
         project_root / "DataSet.csv",
+        project_root / "backend" / "DataSet.csv",
+        Path(__file__).resolve().parents[1] / "DataSet.csv",
     ]
     for candidate in candidates:
         resolved = candidate.resolve()
