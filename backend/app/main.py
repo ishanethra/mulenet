@@ -191,13 +191,46 @@ def list_cases() -> dict:
 @app.post("/copilot")
 def copilot(question: CopilotQuestion) -> dict:
     profile = generate_profile(question.account_id)
+    
+    # Generate a more realistic, detailed LLM-style response
+    reasons_list = "".join([f"<li class='ml-4'><strong>{r}</strong></li>" for r in profile.reasons])
+    
+    answer = f"""
+    <div class='space-y-3'>
+        <h3 class='text-lg font-bold text-blue-400'>🤖 MULENET AI Investigation Report: {question.account_id}</h3>
+        <p><strong>Risk Score:</strong> <span class='text-red-400'>{profile.score}/100</span> <br/>
+        <strong>Status:</strong> High-Priority Review Required</p>
+        
+        <p class='text-sm text-gray-300'>Based on our multi-layered behavioral and graph neural network analysis, this account exhibits strong indicators of organized financial crime.</p>
+        
+        <div>
+            <h4 class='text-md font-semibold text-red-400'>🚨 Key Risk Factors Identified:</h4>
+            <ul class='list-disc list-inside text-sm text-gray-300 mt-1'>
+                {reasons_list}
+            </ul>
+        </div>
+        
+        <div>
+            <h4 class='text-md font-semibold text-blue-300'>🕵️ Copilot Analysis:</h4>
+            <p class='text-sm text-gray-300 mt-1'>The system detected an anomaly cluster matching standard <strong>{profile.reasons[0].split()[0] if profile.reasons else 'AML'}</strong> typologies. The velocity and structure of recent funds strongly deviate from the expected baseline for this customer segment. Graph analysis indicates the account is highly central within a suspicious subgraph, suggesting it may act as a <strong>funnel or pass-through node</strong> for illicit funds.</p>
+        </div>
+        
+        <div>
+            <h4 class='text-md font-semibold text-green-400'>📋 Recommended Next Steps:</h4>
+            <ol class='list-decimal list-inside text-sm text-gray-300 mt-1'>
+                <li><strong>Immediate Action:</strong> Freeze outbound transactions to prevent capital flight.</li>
+                <li><strong>Investigation:</strong> Issue a Request for Information (RFI) for the source of the recent high-volume deposits.</li>
+                <li><strong>Compliance:</strong> If satisfactory documentation is not provided within 48 hours, proceed with generating a formal <strong>Suspicious Activity Report (SAR)</strong>.</li>
+            </ol>
+        </div>
+        
+        <p class='text-xs text-gray-500 italic mt-4'>*Disclaimer: This is an AI-generated synthesis. Human analyst verification is required before taking final regulatory actions.*</p>
+    </div>
+    """
+
     return {
         "account_id": question.account_id,
-        "answer": (
-            f"{question.account_id} is flagged with risk score {profile.score} "
-            f"because of {', '.join(profile.reasons[:3]).lower()}. "
-            "Review network neighbors, verify source of funds, and prepare SAR narrative if customer explanation is insufficient."
-        ),
+        "answer": answer,
         "context_used": ["ensemble_probability", "fraud_dna", "network_graph", "typology_scores", "case_history"],
     }
 

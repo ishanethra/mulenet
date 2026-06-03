@@ -407,7 +407,7 @@ export default function Home() {
                     <Info className="absolute top-3 right-3 size-4 text-[#444]"/>
                     <AnimatePresence mode="wait">
                       <motion.div key={copilotAnswer} initial={{ opacity: 0, filter: 'blur(4px)' }} animate={{ opacity: 1, filter: 'blur(0px)' }} exit={{ opacity: 0, filter: 'blur(4px)' }} transition={{ duration: 0.3 }} className="pt-2">
-                        {copilotAnswer}
+                        <div dangerouslySetInnerHTML={{ __html: copilotAnswer }} />
                       </motion.div>
                     </AnimatePresence>
                   </div>
