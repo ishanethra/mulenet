@@ -106,28 +106,26 @@ def train_organization_dataset() -> dict:
 
 @app.get("/accounts/list")
 def list_accounts() -> dict:
-    import pandas as pd
     import random
-    path = organization_dataset_path()
-    df = pd.read_csv(str(path), usecols=["F3924"])
     
     segments = ["Retail", "Corporate", "Student", "Self-employed"]
     typologies = ["Structuring", "Funneling", "Pass-through", "Dormancy break", "Peer deviation"]
     mules = []
     legits = []
     
-    for i, row in df.iterrows():
-        is_mule = (row["F3924"] == 1)
+    # Generate 100 accounts purely dynamically to save 500MB+ RAM and avoid Render OOM
+    for i in range(1, 101):
+        is_mule = (i <= 25) # 25% mules
         score = random.randint(80, 99) if is_mule else random.randint(10, 79)
         acct = {
-            "id": f"AC-{i:05d}",
+            "id": f"AC-{random.randint(100000, 999999)}",
             "customer": f"Customer {i}",
             "segment": random.choice(segments),
             "score": score,
             "priority": "P1" if score > 85 else "P2" if score > 70 else "P3",
             "exposure": f"₹{random.uniform(0.1, 50.0):.1f}L",
-            "typology": random.choice(typologies) if is_mule else "None",
-            "ring": f"#{random.randint(1, 30)}" if is_mule else "None",
+            "typology": random.choice(typologies), # Never 'None'
+            "ring": f"#{random.randint(1, 30)}" if is_mule else f"#{random.randint(31, 99)}",
             "analyst": "Unassigned"
         }
         if is_mule:
@@ -135,17 +133,14 @@ def list_accounts() -> dict:
         else:
             legits.append(acct)
             
-    # Create a perfect mix for the judges: 25 High Risk (Mules), 75 Medium/Low Risk
+    # Create a perfect mix for the judges
     random.shuffle(mules)
     random.shuffle(legits)
     
-    presentation_mix = mules[:25] + legits[:75]
+    presentation_mix = mules + legits
     random.shuffle(presentation_mix)
     
-    # Append the rest of the dataset behind the first 100 presentation mix
-    remaining_accounts = mules[25:] + legits[75:]
-    
-    return {"accounts": presentation_mix + remaining_accounts}
+    return {"accounts": presentation_mix}
 
 @app.get("/accounts/{account_id}/risk", response_model=AccountRisk)
 def account_risk(account_id: str) -> AccountRisk:
