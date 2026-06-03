@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: mulenet
+      POSTGRES_USER: mulenet
+      POSTGRES_PASSWORD: mulenet
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+
+  api:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql://mulenet:mulenet@postgres:5432/mulenet
+      CORS_ORIGIN: http://localhost:3000
+      ORGANIZATION_DATASET_PATH: /app/DataSet.csv
+    volumes:
+      - ./DataSet.csv:/app/DataSet.csv:ro
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  postgres-data:
