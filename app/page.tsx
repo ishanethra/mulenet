@@ -111,13 +111,13 @@ export default function Home() {
   const [loadingAccounts, setLoadingAccounts] = useState(true);
 
   // Fetch API endpoints
-  const { data: orgData } = useSWR("http://127.0.0.1:8000/datasets/organization", fetcher);
-  const { data: riskData } = useSWR(`http://127.0.0.1:8000/accounts/${selectedAccount.id}/risk`, fetcher);
-  const { data: adversarialData } = useSWR("http://127.0.0.1:8000/simulation/adversarial", (url) => fetch(url, { method: "POST" }).then(res => res.json()));
-  const { data: gnnData } = useSWR(`http://127.0.0.1:8000/accounts/${selectedAccount.id}/network`, fetcher);
+  const { data: orgData } = useSWR("https://mulenet-backend.onrender.com/datasets/organization", fetcher);
+  const { data: riskData } = useSWR(`https://mulenet-backend.onrender.com/accounts/${selectedAccount.id}/risk`, fetcher);
+  const { data: adversarialData } = useSWR("https://mulenet-backend.onrender.com/simulation/adversarial", (url) => fetch(url, { method: "POST" }).then(res => res.json()));
+  const { data: gnnData } = useSWR(`https://mulenet-backend.onrender.com/accounts/${selectedAccount.id}/network`, fetcher);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/accounts/list')
+    fetch('https://mulenet-backend.onrender.com/accounts/list')
       .then(res => res.json())
       .then(data => {
         if (data.accounts && data.accounts.length > 0) {
@@ -173,7 +173,7 @@ export default function Home() {
     if (!prompt.trim()) return;
     setCopilotAnswer("Analyzing context with MULENET intelligence...");
     try {
-      const res = await fetch("http://localhost:8000/copilot", {
+      const res = await fetch("https://mulenet-backend.onrender.com/copilot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ account_id: selectedAccount.id, question: prompt })
@@ -277,7 +277,7 @@ export default function Home() {
     if (selectedAccount) {
       addLog(`Initiated SAR PDF export for ${selectedAccount.id}`);
       try {
-        const response = await fetch(`http://localhost:8000/sar/${selectedAccount.id}.pdf`);
+        const response = await fetch(`https://mulenet-backend.onrender.com/sar/${selectedAccount.id}.pdf`);
         if (!response.ok) throw new Error("PDF generation failed");
         
         const blob = await response.blob();
