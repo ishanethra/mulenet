@@ -192,11 +192,11 @@ def copilot(question: CopilotQuestion) -> dict:
     
     answer = f"""
     <div class='space-y-3'>
-        <h3 class='text-lg font-bold text-blue-400'>🤖 MULENET AI Investigation Report: {question.account_id}</h3>
+        <h3 class='text-lg font-bold text-blue-400'>🤖 AI Investigation Report: {question.account_id}</h3>
         <p><strong>Risk Score:</strong> <span class='text-red-400'>{profile.score}/100</span> <br/>
         <strong>Status:</strong> High-Priority Review Required</p>
         
-        <p class='text-sm text-gray-300'>Based on our multi-layered behavioral and graph neural network analysis, this account exhibits strong indicators of organized financial crime.</p>
+        <p class='text-sm text-gray-300'>Based on our <strong>Stacking Ensemble methods, Temporal Learning framework, and Continual Graph Learning</strong> analysis, this account exhibits strong indicators of organized financial crime.</p>
         
         <div>
             <h4 class='text-md font-semibold text-red-400'>🚨 Key Risk Factors Identified:</h4>
@@ -207,7 +207,7 @@ def copilot(question: CopilotQuestion) -> dict:
         
         <div>
             <h4 class='text-md font-semibold text-blue-300'>🕵️ Copilot Analysis:</h4>
-            <p class='text-sm text-gray-300 mt-1'>The system detected an anomaly cluster matching standard <strong>{profile.reasons[0].split()[0] if profile.reasons else 'AML'}</strong> typologies. The velocity and structure of recent funds strongly deviate from the expected baseline for this customer segment. Graph analysis indicates the account is highly central within a suspicious subgraph, suggesting it may act as a <strong>funnel or pass-through node</strong> for illicit funds.</p>
+            <p class='text-sm text-gray-300 mt-1'>The system detected an anomaly cluster matching standard <strong>{profile.reasons[0].split()[0] if profile.reasons else 'AML'}</strong> typologies. The velocity and structure of recent funds strongly deviate from the expected temporal baseline for this customer segment. Continual Graph analysis indicates the account is highly central within a suspicious subgraph, suggesting it may act as a <strong>funnel or pass-through node</strong> for illicit funds.</p>
         </div>
         
         <div>
@@ -239,7 +239,7 @@ def sar_pdf(account_id: str) -> Response:
     pdf = canvas.Canvas(buffer, pagesize=letter)
     pdf.setTitle(f"SAR Draft {account_id}")
     pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawString(72, 740, "MULENET Suspicious Activity Report Draft")
+    pdf.drawString(72, 740, "AI Suspicious Activity Report Draft")
     pdf.setFont("Helvetica", 10)
     lines = [
         f"Account: {account_id}",
