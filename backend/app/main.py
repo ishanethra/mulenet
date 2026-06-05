@@ -107,6 +107,7 @@ def train_organization_dataset() -> dict:
 @app.get("/accounts/list")
 def list_accounts() -> dict:
     import random
+    from app.services.risk import stable_score
     
     segments = ["Retail", "Corporate", "Student", "Self-employed"]
     typologies = ["Structuring", "Funneling", "Pass-through", "Dormancy break", "Peer deviation"]
@@ -115,10 +116,11 @@ def list_accounts() -> dict:
     
     # Generate 100 accounts purely dynamically to save 500MB+ RAM and avoid Render OOM
     for i in range(1, 101):
-        is_mule = (i <= 25) # 25% mules
-        score = random.randint(80, 99) if is_mule else random.randint(10, 79)
+        acct_id = f"AC-{random.randint(100000, 999999)}"
+        score = stable_score(acct_id)
+        is_mule = score >= 80
         acct = {
-            "id": f"AC-{random.randint(100000, 999999)}",
+            "id": acct_id,
             "customer": f"Customer {i}",
             "segment": random.choice(segments),
             "score": score,
