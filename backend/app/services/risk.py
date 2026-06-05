@@ -41,13 +41,29 @@ def generate_profile(account_id: str) -> RiskProfile:
         "drift": max(0, score - 15),
         "aml": min(100, score + 1),
     }
-    reasons = [
+    import random
+    seed_int = int(hashlib.md5(account_id.encode('utf-8')).hexdigest(), 16)
+    random.seed(seed_int)
+    
+    all_reasons = [
         "High outgoing transfer velocity after unusual incoming credits",
         "Funds retained for a short interval before onward movement",
         "Connected to high-risk counterparties in transaction graph",
         "Peer risk ratio exceeds similar customer cohort baseline",
         "Behavior drift from learned digital twin profile",
+        "Multiple failed login attempts across anomalous IP ranges",
+        "Unusual device fingerprint matching known fraud farms",
+        "Sudden spike in cross-border transactions to high-risk jurisdictions",
+        "Rapid succession of micro-deposits indicating account testing",
+        "Transaction timestamps align with automated botnet activity patterns",
+        "Large even-dollar transfers inconsistent with prior history",
+        "Shared device MAC address with previously frozen accounts",
     ]
+    random.shuffle(all_reasons)
+    
+    # Pick a random subset of reasons based on score severity
+    num_reasons = 5 if score > 80 else (3 if score > 50 else 2)
+    reasons = all_reasons[:num_reasons]
     emerging = {
         "7_day": min(100, score - 18),
         "30_day": min(100, score - 7),

@@ -257,9 +257,13 @@ def sar_pdf(account_id: str) -> Response:
     # Generate some realistic-looking transaction history for the report
     import random
     from datetime import datetime, timedelta
+    import hashlib
+    seed_int = int(hashlib.md5(account_id.encode('utf-8')).hexdigest(), 16)
+    random.seed(seed_int)
+    
     now = datetime.now()
     for i in range(5):
-        tx_type = random.choice(["WIRE TRANSFER", "OFFSHORE CLEARING", "CASH DEPOSIT"])
+        tx_type = random.choice(["WIRE TRANSFER", "OFFSHORE CLEARING", "CASH DEPOSIT", "CRYPTO EXCHANGE", "ACH TRANSFER"])
         amt = random.randint(1000, 99000)
         time = (now - timedelta(hours=i*3+1)).strftime("%Y-%m-%d %H:%M")
         sign = "-" if i % 2 == 0 else "+"
