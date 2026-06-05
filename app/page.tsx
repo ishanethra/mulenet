@@ -974,7 +974,6 @@ export default function Home() {
                  const acct = highRiskAccounts.find(a => a.id === e.target.value);
                  if (acct) {
                    setSelectedAccount(acct);
-                   setActiveTab("Command Center");
                  }
                  setSelectedEdge(null);
                }}
