@@ -137,36 +137,26 @@ def train_ensemble(df: pd.DataFrame) -> dict:
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42, stratify=y)
     scale_pos_weight = float((y_train == 0).sum() / max(1, (y_train == 1).sum()))
 
-    try:
-        from lightgbm import LGBMClassifier
-        from xgboost import XGBClassifier
+    from lightgbm import LGBMClassifier
+    from xgboost import XGBClassifier
 
-        models = [
-            LGBMClassifier(n_estimators=250, learning_rate=0.04, scale_pos_weight=scale_pos_weight, random_state=42),
-            XGBClassifier(n_estimators=220, learning_rate=0.04, max_depth=5, eval_metric="logloss", scale_pos_weight=scale_pos_weight, random_state=42),
-        ]
-        predictions = []
-        importances = np.zeros(len(selected))
-        for model in models:
-            model.fit(x_train, y_train)
-            predictions.append(model.predict_proba(x_test)[:, 1])
-            if hasattr(model, "feature_importances_"):
-                importances += np.asarray(model.feature_importances_)
-        proba = np.average(predictions, axis=0, weights=[0.6, 0.4])
-        
-        preds_all = []
-        for model in models:
-            preds_all.append(model.predict_proba(x)[:, 1])
-        proba_all = np.average(preds_all, axis=0, weights=[0.6, 0.4])
-        
-    except Exception:
-        from sklearn.ensemble import HistGradientBoostingClassifier
-
-        model = Pipeline([("clf", HistGradientBoostingClassifier(random_state=42, class_weight="balanced"))])
+    models = [
+        LGBMClassifier(n_estimators=250, learning_rate=0.04, scale_pos_weight=scale_pos_weight, random_state=42),
+        XGBClassifier(n_estimators=220, learning_rate=0.04, max_depth=5, eval_metric="logloss", scale_pos_weight=scale_pos_weight, random_state=42),
+    ]
+    predictions = []
+    importances = np.zeros(len(selected))
+    for model in models:
         model.fit(x_train, y_train)
-        proba = model.predict_proba(x_test)[:, 1]
-        importances = np.zeros(len(selected))
-        proba_all = model.predict_proba(x)[:, 1]
+        predictions.append(model.predict_proba(x_test)[:, 1])
+        if hasattr(model, "feature_importances_"):
+            importances += np.asarray(model.feature_importances_)
+    proba = np.average(predictions, axis=0, weights=[0.5, 0.5])
+    
+    preds_all = []
+    for model in models:
+        preds_all.append(model.predict_proba(x)[:, 1])
+    proba_all = np.average(preds_all, axis=0, weights=[0.5, 0.5])
 
     labels = (proba >= 0.5).astype(int)
     
