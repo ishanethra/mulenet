@@ -91,7 +91,11 @@ const nav = [
 ];
 
 const AppLogo = ({ className }: { className?: string }) => (
-  <BrainCircuit className={className} />
+  <div className={`relative flex items-center justify-center ${className}`}>
+    <Hexagon className="absolute inset-0 w-full h-full text-[#60a5fa]/70 animate-[spin_10s_linear_infinite]" strokeWidth={1} />
+    <Hexagon className="absolute inset-[15%] w-[70%] h-[70%] text-[#3b82f6] animate-[spin_15s_linear_infinite_reverse]" strokeWidth={1.5} />
+    <div className="w-[15%] h-[15%] bg-blue-100 rounded-full shadow-[0_0_15px_#60a5fa]" />
+  </div>
 );
 
 export default function Home() {
