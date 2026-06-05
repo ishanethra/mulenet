@@ -90,16 +90,8 @@ const nav = [
   { label: "Audit Logs", icon: List },
 ];
 
-const BOILogo = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="15" r="12" fill="#FF1E00" />
-    <polygon points="49,36 29,28 29,88 49,96" fill="#FF1E00" />
-    <polygon points="27,31 20,28 20,85 27,89" fill="#FF8C00" />
-    <polygon points="18,30 12,27 12,84 18,87" fill="#FFA500" />
-    <polygon points="51,36 71,28 71,88 51,96" fill="#FF1E00" />
-    <polygon points="73,31 80,28 80,85 73,89" fill="#FF8C00" />
-    <polygon points="82,30 88,27 88,84 82,87" fill="#FFA500" />
-  </svg>
+const AppLogo = ({ className }: { className?: string }) => (
+  <BrainCircuit className={className} />
 );
 
 export default function Home() {
@@ -910,7 +902,7 @@ export default function Home() {
               className="flex flex-col items-center justify-center p-12 min-w-[500px]"
             >
               <div className="mb-12 flex flex-col items-center">
-                <BOILogo className="h-20 w-20 drop-shadow-[0_0_20px_rgba(255,30,0,0.5)]" />
+                <AppLogo className="h-20 w-20 text-blue-400 drop-shadow-[0_0_20px_rgba(56,189,248,0.5)]" />
                 <h1 className="mt-8 text-5xl font-mono tracking-[0.5em] font-light text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] ml-4">MULENET</h1>
                 <p className="mt-4 text-xs font-mono text-[#60a5fa] tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(96,165,250,0.4)]">Advanced Intelligence Platform</p>
               </div>
@@ -939,7 +931,7 @@ export default function Home() {
         <div className="flex h-16 items-center border-b border-[#222] px-4 justify-between">
           <div className="flex items-center gap-3 overflow-hidden whitespace-nowrap">
             <div className="flex size-8 shrink-0 items-center justify-center rounded bg-[#111] border border-[#333] shadow-[0_0_10px_rgba(255,30,0,0.15)]">
-              <BOILogo className="size-5" />
+              <AppLogo className="size-5 text-blue-400" />
             </div>
           </div>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-[#555] hover:text-[#aaa] transition-colors p-1.5 bg-[#111] rounded-md border border-[#222] shrink-0">
