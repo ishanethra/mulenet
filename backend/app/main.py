@@ -308,20 +308,20 @@ def sar_pdf(account_id: str) -> Response:
     from datetime import datetime, timedelta
     import hashlib
     seed_int = int(hashlib.md5(account_id.encode('utf-8')).hexdigest(), 16)
-    random.seed(seed_int)
+    rng = random.Random(seed_int)
     
     now = datetime.now()
     for i in range(5):
-        tx_type = random.choice(["WIRE TRANSFER", "OFFSHORE CLEARING", "CASH DEPOSIT", "CRYPTO EXCHANGE", "ACH TRANSFER"])
-        amt = random.randint(1000, 99000)
+        tx_type = rng.choice(["WIRE TRANSFER", "OFFSHORE CLEARING", "CASH DEPOSIT", "CRYPTO EXCHANGE", "ACH TRANSFER"])
+        amt = rng.randint(1000, 99000)
         time = (now - timedelta(hours=i*3+1)).strftime("%Y-%m-%d %H:%M")
         sign = "-" if i % 2 == 0 else "+"
         lines.append(f"[{time}] {tx_type:<18} {sign}₹{amt:,.2f}  (FLAGGED)")
         
     lines.append("")
     lines.append("NETWORK LINKAGES:")
-    lines.append(f"- Transferred funds to known suspicious entity AC-{random.randint(10000,99999)}")
-    lines.append(f"- Shared device hash with {random.randint(2,5)} other high-risk accounts")
+    lines.append(f"- Transferred funds to known suspicious entity AC-{rng.randint(10000,99999)}")
+    lines.append(f"- Shared device hash with {rng.randint(2,5)} other high-risk accounts")
     y = 690
     for line in lines:
         pdf.drawString(72, y, line[:105])
