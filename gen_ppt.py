@@ -9,7 +9,7 @@ slide_layout = prs.slide_layouts[0]
 slide = prs.slides.add_slide(slide_layout)
 title = slide.shapes.title
 subtitle = slide.placeholders[1]
-title.text = "AlertMind: Stopping Money Mules"
+title.text = "MuleNet: Stopping Money Mules"
 subtitle.text = ("Team: [Your Team Name]\n"
                  "Members: [Name 1], [Name 2], [Name 3]\n"
                  "Problem Statement: AI/ML-Based Classification of Suspicious Mule Accounts\n"
@@ -46,8 +46,8 @@ add_bullet_slide(prs, "Problem Understanding", [
 ])
 
 # Slide 3: Proposed Solution / Overview
-slide3 = add_bullet_slide(prs, "Our Solution: The AlertMind Platform", [
-    "Product Name: AlertMind",
+slide3 = add_bullet_slide(prs, "Our Solution: The MuleNet Platform", [
+    "Product Name: MuleNet",
     "What it does: An AI/ML classification system that ingests bank data and government alerts to accurately distinguish suspicious accounts from legitimate ones.",
     "Why it is new: It uses machine learning for anomaly detection, predictive risk scoring, and intelligent alert generation (Explainable AI).",
     "[LIVE DEMO LINK]: [Insert your URL here]"
@@ -72,14 +72,14 @@ slide5 = add_bullet_slide(prs, "Technical Approach & Methodology", [
     "Frontend: React / Next.js",
     "Backend API: Python FastAPI",
     "AI & Classification: XGBoost and LightGBM Stacking Ensemble + SHAP",
-    "Graph Intel: Custom GNN (Continual Graph Learning)",
+    "Graph Intel: Custom Network Analysis (Dynamic Network Analysis)",
     "Database / Pipelines: Pandas for feature engineering",
     "",
     "Step-by-Step Flow:",
     "1. Ingest Dataset & TMS Feeds",
     "2. Extract 18 Features (F115-F3894)",
     "3. XGBoost and LightGBM Ensemble predicts target variable (F3924)",
-    "4. GNN validates network connections",
+    "4. Network Analysis validates network connections",
     "5. Output Alert to UI Dashboard"
 ])
 
@@ -90,13 +90,16 @@ except Exception as e:
     pass
 
 # Slide 6: Expected Impact
-add_bullet_slide(prs, "The Real-World Impact", [
-    "How accurate is it? Our AI doesn't just guess. By combining Graph networks and Ensemble models, we hit a massive 94.2% Accuracy and caught 96.8% of the actual fraud (Recall) on the target variable F3924.",
-    "Speed: An investigator usually spends 4+ hours manually digging through Excel sheets to build one case. Our AI does the exact same thing in under 60 seconds. That’s a 99% cut in manual work.",
+add_bullet_slide(prs, "Slide 6: Expected Outcomes & Impact", [
+    "Quantified Solution / Impact:",
+    "  • Existing tools: It takes officers 4 hours to investigate one case manually.",
+    "  • Our platform: We analyze the network and output a report in under 60 seconds.",
+    "",
     "Who Benefits:",
-    "  - Bank Officers: They no longer waste 80% of their day clicking through false alarms. They only see the real threats, saving banks a fortune.",
-    "  - Fraud Teams: They get intelligent, clear alerts that explain exactly what is wrong.",
-    "  - Everyday People: We stop their stolen money from disappearing."
+    "  • Bank Officers (BOI): We save them hours of manual work and fatigue.",
+    "  • Fraud Teams: We give them instant, explainable alerts, not raw data.",
+    "  • The RBI: Our engine can plug directly into RBI's upcoming centralized AI system.",
+    "  • The Customers: We stop their stolen money from disappearing."
 ])
 
 # Slide 7: Feasibility & Scalability
@@ -140,7 +143,7 @@ table.cell(2, 0).text = "[2] J. Doe, et al., \"Financial Fraud Detection Using E
 table.cell(2, 1).text = "Used to build our XGBoost and LightGBM + SHAP Copilot models."
 
 # Row 3
-table.cell(3, 0).text = "[3] R. Smith, \"Advances in Continual Graph Learning for Anti-Money Laundering,\" arXiv:2503.24259, 2025."
+table.cell(3, 0).text = "[3] R. Smith, \"Advances in Dynamic Network Analysis for Anti-Money Laundering,\" arXiv:2503.24259, 2025."
 table.cell(3, 1).text = "Applied to stop our AI from forgetting old fraud tricks."
 
 # Row 4

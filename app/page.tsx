@@ -241,7 +241,7 @@ export default function Home() {
   }
 
   const getCaseNotes = () => {
-    const baseStr = `[AUTO-DRAFTED BY MULENET]\nAccount ${selectedAccount.id} flagged with Critical Risk Score (${activeRiskProfile.score ?? selectedAccount.score}/100).\nPrimary drivers: ${(activeRiskProfile.top_reasons || []).join(", ") || selectedAccount.typology}.\nNetwork Analysis: Linked to ${gnnData?.summary?.node_count || 6} entities across ${gnnData?.summary?.communities || 4} high-risk clusters.\n\n`;
+    const baseStr = `[AUTO-DRAFTED BY MULENET - CONFIDENTIAL FOR BANKING USER ONLY]\nAccount ${selectedAccount.id} flagged with Critical Risk Score (${activeRiskProfile.score ?? selectedAccount.score}/100).\nPrimary drivers: ${(activeRiskProfile.top_reasons || []).join(", ") || selectedAccount.typology}.\nNetwork Analysis: Linked to ${gnnData?.summary?.node_count || 6} entities across ${gnnData?.summary?.communities || 4} high-risk clusters.\n\n`;
     
     if (caseStatus === 'Open') {
        return baseStr + `Status: OPEN\nAction Required: Triage and assign to investigator. Recommend placing a temporary hold on outgoing wires.`;

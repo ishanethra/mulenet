@@ -282,7 +282,13 @@ def sar_pdf(account_id: str) -> Response:
     pdf.setTitle(f"SAR Draft {account_id}")
     pdf.setFont("Helvetica-Bold", 16)
     pdf.drawString(72, 740, "AI Suspicious Activity Report Draft")
+    pdf.setFont("Helvetica-Bold", 10)
+    pdf.setFillColorRGB(0.8, 0, 0)
+    pdf.drawString(72, 720, "CONFIDENTIAL: FOR INTERNAL BANKING PERSONNEL ONLY")
+    pdf.setFillColorRGB(0, 0, 0)
     pdf.setFont("Helvetica", 10)
+    
+    y = 690
     lines = [
         f"Account: {account_id}",
         f"Risk Score: {profile.score} ({risk_category(profile.score)})",
@@ -313,7 +319,7 @@ def sar_pdf(account_id: str) -> Response:
     lines.append("NETWORK LINKAGES:")
     lines.append(f"- Transferred funds to known suspicious entity AC-{random.randint(10000,99999)}")
     lines.append(f"- Shared device hash with {random.randint(2,5)} other high-risk accounts")
-    y = 710
+    y = 690
     for line in lines:
         pdf.drawString(72, y, line[:105])
         y -= 18
