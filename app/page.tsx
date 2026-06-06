@@ -113,7 +113,7 @@ export default function Home() {
   const [copilotAnswer, setCopilotAnswer] = useState("Awaiting command...");
 
   useEffect(() => {
-    setCopilotAnswer("Awaiting command...");
+    answerCopilot("Explain risk score and features");
   }, [selectedAccount.id]);
 
   const [activeTab, setActiveTab] = useState("Command Center");
