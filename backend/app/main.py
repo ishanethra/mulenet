@@ -192,6 +192,48 @@ def copilot(question: CopilotQuestion) -> dict:
     # Generate a more realistic, detailed LLM-style response
     reasons_list = "".join([f"<li class='ml-4'><strong>{r}</strong></li>" for r in profile.reasons])
     
+    import hashlib
+    import random
+    seed_int = int(hashlib.md5(question.account_id.encode('utf-8')).hexdigest(), 16)
+    random.seed(seed_int)
+    
+    upi_texts = [
+        "While rapid transaction velocity is naturally common in instant payment networks like UPI, our Temporal Learning framework has isolated <em>sub-second automated fan-out patterns</em> that mathematically deviate from human UPI behavior.",
+        "Although the sheer volume of transactions aligns with typical high-frequency UPI usage, the exact millisecond temporal spacing indicates scripted API calls rather than manual human interaction.",
+        "Fast UPI payments are expected for this segment; however, the graph convolution layers flagged the specific routing sequence as anomalous, skipping expected consumer endpoints in favor of deep-tier shell accounts.",
+        "Unlike natural high-velocity UPI behavior where funds disperse to known retail merchants, this account exhibits robotic circular transfers that return to the origin cluster within seconds."
+    ]
+    
+    graph_texts = [
+        "Continual Graph analysis further corroborates this by placing the account highly central within a suspicious subgraph, confirming it acts as a <strong>funnel or pass-through node</strong> for illicit funds.",
+        "Topological embeddings from the GNN layer indicate a strong structural similarity to known money mule rings dismantled in previous quarters.",
+        "Network intelligence reveals that the account is forming a bridging link between two otherwise isolated high-risk communities, a strong indicator of orchestrated layering.",
+        "The node's PageRank score within the local transaction subgraph is unusually high for a standard account, strongly suggesting it serves as an aggregation point before clearance."
+    ]
+    
+    next_steps_variants = [
+        [
+            "<strong>Immediate Action:</strong> Freeze outbound transactions to prevent capital flight.",
+            "<strong>Investigation:</strong> Issue a Request for Information (RFI) for the source of the recent high-volume deposits.",
+            "<strong>Compliance:</strong> If satisfactory documentation is not provided within 48 hours, proceed with generating a formal <strong>Suspicious Activity Report (SAR)</strong>."
+        ],
+        [
+            "<strong>Immediate Action:</strong> Apply a risk-based debit block while allowing incoming credits.",
+            "<strong>Investigation:</strong> Escalate to Tier 2 SOC analyst for manual graph traversal of the immediate neighborhood.",
+            "<strong>Compliance:</strong> Prepare preliminary documentation for law enforcement liaison."
+        ],
+        [
+            "<strong>Immediate Action:</strong> Flag account for enhanced monitoring (Priority 1) without freezing.",
+            "<strong>Investigation:</strong> Run advanced device fingerprinting to check for emulators or botnets.",
+            "<strong>Compliance:</strong> File an early-warning SAR if the fan-out behavior continues over the next 12 hours."
+        ]
+    ]
+    
+    typology = profile.reasons[0].split()[0] if profile.reasons else 'AML'
+    copilot_analysis = f"The system detected an anomaly cluster matching standard <strong>{typology}</strong> typologies. <strong>{random.choice(upi_texts)}</strong> {random.choice(graph_texts)}"
+    next_steps = random.choice(next_steps_variants)
+    next_steps_html = "".join([f"<li>{step}</li>" for step in next_steps])
+    
     answer = f"""
     <div class='space-y-3'>
         <h3 class='text-lg font-bold text-blue-400'>🤖 AI Investigation Report: {question.account_id}</h3>
@@ -209,15 +251,13 @@ def copilot(question: CopilotQuestion) -> dict:
         
         <div>
             <h4 class='text-md font-semibold text-blue-300'>🕵️ Copilot Analysis:</h4>
-            <p class='text-sm text-gray-300 mt-1'>The system detected an anomaly cluster matching standard <strong>{profile.reasons[0].split()[0] if profile.reasons else 'AML'}</strong> typologies. <strong>While rapid transaction velocity is naturally common in instant payment networks like UPI</strong>, our Temporal Learning framework has isolated <em>sub-second automated fan-out patterns</em> that mathematically deviate from human UPI behavior. Continual Graph analysis further corroborates this by placing the account highly central within a suspicious subgraph, confirming it acts as a <strong>funnel or pass-through node</strong> for illicit funds rather than natural high-frequency usage.</p>
+            <p class='text-sm text-gray-300 mt-1'>{copilot_analysis}</p>
         </div>
         
         <div>
             <h4 class='text-md font-semibold text-green-400'>📋 Recommended Next Steps:</h4>
             <ol class='list-decimal list-inside text-sm text-gray-300 mt-1'>
-                <li><strong>Immediate Action:</strong> Freeze outbound transactions to prevent capital flight.</li>
-                <li><strong>Investigation:</strong> Issue a Request for Information (RFI) for the source of the recent high-volume deposits.</li>
-                <li><strong>Compliance:</strong> If satisfactory documentation is not provided within 48 hours, proceed with generating a formal <strong>Suspicious Activity Report (SAR)</strong>.</li>
+                {next_steps_html}
             </ol>
         </div>
         
