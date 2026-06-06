@@ -316,10 +316,14 @@ export default function Home() {
       // Connect to center node 70% of the time, to create varying topologies
       if (Math.random() > 0.3 || i === 1) {
         edges.push({ from: selectedAccount.id, to: dynamicGraphNodes[i].id });
+      } else {
+        // Guarantee connection to the main cluster by connecting to an already processed node
+        const previousNodeIdx = Math.floor(Math.random() * i);
+        edges.push({ from: dynamicGraphNodes[previousNodeIdx].id, to: dynamicGraphNodes[i].id });
       }
       
-      // Connect to another random node to create complex clusters
-      if (Math.random() > 0.6 && i < dynamicGraphNodes.length - 1) {
+      // Add extra random cross-connections to create complex clusters
+      if (Math.random() > 0.7 && i < dynamicGraphNodes.length - 1) {
         const randomTarget = Math.floor(Math.random() * (dynamicGraphNodes.length - 1)) + 1;
         if (randomTarget !== i) {
           edges.push({ from: dynamicGraphNodes[i].id, to: dynamicGraphNodes[randomTarget].id });
