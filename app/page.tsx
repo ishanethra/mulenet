@@ -408,7 +408,7 @@ export default function Home() {
                             className={`cursor-pointer transition-all hover:bg-[#1a1a1a] ${isSelected ? 'bg-[#111] border-l-2 border-[#60a5fa]' : 'border-l-2 border-transparent'}`}
                             onClick={() => {
                               setSelectedAccount(a);
-                              setActiveTab("Cases & SAR");
+                              setActiveTab("Command Center");
                               addLog(`Started AI investigation for ${a.id} via Copilot`);
                             }}
                           >
