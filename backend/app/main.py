@@ -194,28 +194,32 @@ def copilot(question: CopilotQuestion) -> dict:
     
     import hashlib
     import random
+    
+    # Use an isolated Random instance so we don't pollute global state
     seed_int = int(hashlib.md5(question.account_id.encode('utf-8')).hexdigest(), 16)
-    random.seed(seed_int)
+    rng = random.Random(seed_int)
+    
+    typology = profile.reasons[0].split()[0] if profile.reasons else 'AML'
     
     upi_texts = [
-        "While rapid transaction velocity is naturally common in instant payment networks like UPI, our Temporal Learning framework has isolated <em>sub-second automated fan-out patterns</em> that mathematically deviate from human UPI behavior.",
-        "Although the sheer volume of transactions aligns with typical high-frequency UPI usage, the exact millisecond temporal spacing indicates scripted API calls rather than manual human interaction.",
-        "Fast UPI payments are expected for this segment; however, the graph convolution layers flagged the specific routing sequence as anomalous, skipping expected consumer endpoints in favor of deep-tier shell accounts.",
-        "Unlike natural high-velocity UPI behavior where funds disperse to known retail merchants, this account exhibits robotic circular transfers that return to the origin cluster within seconds."
+        f"While rapid transaction velocity is naturally common in instant payment networks, our Temporal Learning framework has isolated <em>sub-second automated fan-out patterns</em> on {question.account_id} that mathematically deviate from human behavior.",
+        f"Although the sheer volume of transactions aligns with typical high-frequency usage, the exact millisecond temporal spacing of {question.account_id} indicates scripted API calls rather than manual human interaction.",
+        f"Fast payments are expected for this segment; however, the graph convolution layers flagged {question.account_id}'s routing sequence as anomalous, skipping expected consumer endpoints in favor of deep-tier shell accounts.",
+        f"Unlike natural high-velocity behavior where funds disperse to known retail merchants, {question.account_id} exhibits robotic circular transfers that return to the origin cluster within seconds."
     ]
     
     graph_texts = [
-        "Continual Graph analysis further corroborates this by placing the account highly central within a suspicious subgraph, confirming it acts as a <strong>funnel or pass-through node</strong> for illicit funds.",
-        "Topological embeddings from the GNN layer indicate a strong structural similarity to known money mule rings dismantled in previous quarters.",
-        "Network intelligence reveals that the account is forming a bridging link between two otherwise isolated high-risk communities, a strong indicator of orchestrated layering.",
-        "The node's PageRank score within the local transaction subgraph is unusually high for a standard account, strongly suggesting it serves as an aggregation point before clearance."
+        f"Continual Graph analysis further corroborates this by placing the account highly central within a suspicious {typology.lower()} subgraph, confirming it acts as a <strong>funnel or pass-through node</strong>.",
+        f"Topological embeddings from the GNN layer indicate a strong structural similarity between {question.account_id} and known money mule rings dismantled in previous quarters.",
+        f"Network intelligence reveals that {question.account_id} is forming a bridging link between two otherwise isolated high-risk communities, a strong indicator of orchestrated layering.",
+        f"The node's PageRank score within the local transaction subgraph is unusually high ({profile.score}/100 Risk), strongly suggesting it serves as an aggregation point before clearance."
     ]
     
     next_steps_variants = [
         [
-            "<strong>Immediate Action:</strong> Freeze outbound transactions to prevent capital flight.",
+            f"<strong>Immediate Action:</strong> Freeze outbound transactions for {question.account_id} to prevent capital flight.",
             "<strong>Investigation:</strong> Issue a Request for Information (RFI) for the source of the recent high-volume deposits.",
-            "<strong>Compliance:</strong> If satisfactory documentation is not provided within 48 hours, proceed with generating a formal <strong>Suspicious Activity Report (SAR)</strong>."
+            f"<strong>Compliance:</strong> Proceed with generating a formal <strong>Suspicious Activity Report (SAR)</strong> for {question.account_id}."
         ],
         [
             "<strong>Immediate Action:</strong> Apply a risk-based debit block while allowing incoming credits.",
@@ -229,9 +233,8 @@ def copilot(question: CopilotQuestion) -> dict:
         ]
     ]
     
-    typology = profile.reasons[0].split()[0] if profile.reasons else 'AML'
-    copilot_analysis = f"The system detected an anomaly cluster matching standard <strong>{typology}</strong> typologies. <strong>{random.choice(upi_texts)}</strong> {random.choice(graph_texts)}"
-    next_steps = random.choice(next_steps_variants)
+    copilot_analysis = f"The system detected an anomaly cluster matching standard <strong>{typology}</strong> typologies. <strong>{rng.choice(upi_texts)}</strong> {rng.choice(graph_texts)}"
+    next_steps = rng.choice(next_steps_variants)
     next_steps_html = "".join([f"<li>{step}</li>" for step in next_steps])
     
     answer = f"""

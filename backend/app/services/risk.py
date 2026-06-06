@@ -43,7 +43,7 @@ def generate_profile(account_id: str) -> RiskProfile:
     }
     import random
     seed_int = int(hashlib.md5(account_id.encode('utf-8')).hexdigest(), 16)
-    random.seed(seed_int)
+    rng = random.Random(seed_int)
     
     all_reasons = [
         "High outgoing transfer velocity after unusual incoming credits",
@@ -59,7 +59,7 @@ def generate_profile(account_id: str) -> RiskProfile:
         "Large even-dollar transfers inconsistent with prior history",
         "Shared device MAC address with previously frozen accounts",
     ]
-    random.shuffle(all_reasons)
+    rng.shuffle(all_reasons)
     
     # Pick a random subset of reasons based on score severity
     num_reasons = 5 if score > 80 else (3 if score > 50 else 2)
