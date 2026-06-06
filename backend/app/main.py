@@ -316,7 +316,7 @@ def sar_pdf(account_id: str) -> Response:
         amt = random.randint(1000, 99000)
         time = (now - timedelta(hours=i*3+1)).strftime("%Y-%m-%d %H:%M")
         sign = "-" if i % 2 == 0 else "+"
-        lines.append(f"[{time}] {tx_type:<18} {sign}${amt:,.2f}  (FLAGGED)")
+        lines.append(f"[{time}] {tx_type:<18} {sign}₹{amt:,.2f}  (FLAGGED)")
         
     lines.append("")
     lines.append("NETWORK LINKAGES:")

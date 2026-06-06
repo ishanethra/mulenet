@@ -342,7 +342,7 @@ export default function Home() {
       return {
         id: `TX-${selectedAccount.id.replace('AC-', '')}-${i}`,
         type, sign, amount, hoursAgo,
-        formattedAmount: `${sign}$${amount}.00`,
+        formattedAmount: `${sign}₹${amount}.00`,
         timeStr: `${hoursAgo} HOURS AGO`
       };
     }).sort((a, b) => a.hoursAgo - b.hoursAgo);
@@ -652,7 +652,7 @@ export default function Home() {
                           markerEnd="url(#arrowhead)"
                           strokeDasharray={from === selectedAccount.id || to === selectedAccount.id ? "none" : "8 8"} 
                           className="cursor-pointer hover:stroke-[#fff] hover:stroke-[4px] transition-all" 
-                          onClick={() => setSelectedEdge({from, to, amount: `$${Math.floor(Math.random()*50000)+1000}`})} 
+                          onClick={() => setSelectedEdge({from, to, amount: `₹${Math.floor(Math.random()*50000)+1000}`})} 
                         />
                       );
                     })}
@@ -700,7 +700,7 @@ export default function Home() {
                         <div className="text-[#60a5fa] mt-1 font-mono">EST. VOLUME: {selectedEdge.amount}</div>
                         <div className="text-[#888] mt-1 font-mono">TYPE: {selectedEdge.amount.length > 5 ? 'WIRE TRANSFER' : 'OFFSHORE CLEARING'}</div>
                         <div className="text-[#888] mt-1 font-mono">TIMESTAMP: {new Date().toISOString().replace('T', ' ').slice(0, 19)}</div>
-                        <div className="text-[#ef4444] mt-1 font-mono text-[10px]">FLAGS: {selectedEdge.amount.startsWith('$9,') ? 'STRUCTURING_DETECTED' : 'HIGH_VELOCITY'}</div>
+                        <div className="text-[#ef4444] mt-1 font-mono text-[10px]">FLAGS: {selectedEdge.amount.startsWith('₹9,') ? 'STRUCTURING_DETECTED' : 'HIGH_VELOCITY'}</div>
                         <div className="text-[#888] mt-1 font-mono">STATUS: CLEARED</div>
                         <button onClick={() => setSelectedEdge(null)} className="mt-3 text-[9px] text-[#555] hover:text-[#fff] uppercase tracking-widest font-mono transition-colors">BACK TO ACCOUNT INFO</button>
                       </>
@@ -711,7 +711,7 @@ export default function Home() {
                         <div className="text-[#888] mt-1 font-mono">RISK SCORE: {selectedAccount.score}/100</div>
                         <div className="text-[#888] mt-1 font-mono">TYPOLOGY: {selectedAccount.typology}</div>
                         <div className="text-[#888] mt-1 font-mono">EXPOSURE: {selectedAccount.exposure}</div>
-                        <div className="text-[#888] mt-1 font-mono">AVG TX SIZE: ${selectedAccount.score > 80 ? '9,430.00' : '2,150.00'}</div>
+                        <div className="text-[#888] mt-1 font-mono">AVG TX SIZE: ₹{selectedAccount.score > 80 ? '9,430.00' : '2,150.00'}</div>
                         <div className="text-[#888] mt-1 font-mono">TX VELOCITY: {selectedAccount.score > 80 ? '42 TX/hr' : '3 TX/hr'}</div>
                         <div className="text-[#888] mt-1 font-mono">PAGERANK: {dynamicGraphNodes.find((n: any) => n.id === selectedAccount.id)?.pagerank || gnnData?.summary?.avg_pagerank || 0.04}</div>
                       </>

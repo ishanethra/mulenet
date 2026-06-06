@@ -170,7 +170,7 @@ def train_ensemble(df: pd.DataFrame) -> dict:
             "id": f"AC-{idx + 100000}",
             "customer": "Corporate Client" if idx % 3 == 0 else "Individual",
             "score": score,
-            "exposure": f"${(idx % 10 + 1) * 15000}",
+            "exposure": f"₹{(idx % 10 + 1) * 15000}",
             "typology": "Layering" if idx % 2 == 0 else "Pass-through",
             "ring": f"R-{idx % 5 + 1}",
             "analyst": "Unassigned"
