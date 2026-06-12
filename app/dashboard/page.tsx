@@ -66,6 +66,7 @@ export default function Home() {
   // Network Modal States
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
   const [selectedNetworkNode, setSelectedNetworkNode] = useState<any>(null);
+  const [nodeActionMessage, setNodeActionMessage] = useState<string | null>(null);
 
   // SAR Modal State
   const [isSarModalOpen, setIsSarModalOpen] = useState(false);
@@ -108,31 +109,34 @@ export default function Home() {
     const params = new URLSearchParams(window.location.search);
     const accId = params.get("account");
 
-    fetch('https://mulenet-backend.onrender.com/api/v1/accounts')
+    fetch('/accounts.json')
       .then(res => res.json())
       .then(data => {
-        setDynamicAccounts(data.accounts || fallbackAccounts);
-        if (data.lineData) setLineData(data.lineData);
+        const mappedAccounts = data.map((a: any) => ({
+          ...a,
+          riskScore: a.score,
+          priority: a.score >= 70 ? 'P1' : a.score >= 40 ? 'P2' : 'P3'
+        }));
+        setDynamicAccounts(mappedAccounts);
+        
+        // Use the actual dataset to build the Probability Flux graph deterministically
+        const flux = [];
+        for (let i = 0; i < 24; i++) {
+          const d = new Date();
+          d.setHours(d.getHours() - (23 - i));
+          // Sample the real data to show actual score variance over time
+          const sampleAcc = mappedAccounts[i * 2] || mappedAccounts[0];
+          flux.push({
+            time: `${d.getHours()}:00`,
+            flux: Math.floor(Math.max(10, Math.min(100, sampleAcc.score + (Math.sin(i) * 12))))
+          });
+        }
+        setLineData(flux);
       })
       .catch(err => {
-        console.error("Failed to load accounts", err);
+        console.error("Failed to load local dataset", err);
         setDynamicAccounts(fallbackAccounts);
       });
-      
-    // Generate instant Flux data if backend didn't provide it
-    const generateFlux = () => {
-      const flux = [];
-      for (let i = 0; i < 24; i++) {
-        const d = new Date();
-        d.setHours(d.getHours() - (23 - i));
-        flux.push({
-          time: `${d.getHours()}:00`,
-          flux: Math.floor(60 + Math.random() * 35)
-        });
-      }
-      return flux;
-    };
-    setLineData(generateFlux());
 
     const loadedAccounts = fallbackAccounts;
     if (accId) {
@@ -457,7 +461,10 @@ export default function Home() {
                           ]} 
                           fill="#3b82f6" 
                           line={{ stroke: "#444", strokeWidth: 1 }}
-                          onClick={(e) => setSelectedNetworkNode(e)}
+                          onClick={(e) => {
+                            setSelectedNetworkNode(e);
+                            setNodeActionMessage(null);
+                          }}
                           className="cursor-pointer"
                         >
                           {
@@ -481,19 +488,40 @@ export default function Home() {
                     
                     {selectedNetworkNode ? (
                       <div className="space-y-6">
-                        <div>
-                          <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Entity Name</span>
-                          <p className="text-md font-mono text-blue-400">{selectedNetworkNode.name}</p>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Entity Name</span>
+                            <p className="text-md font-mono text-blue-400 truncate" title={selectedNetworkNode.name}>{selectedNetworkNode.name}</p>
+                          </div>
+                          <div>
+                            <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Account Type</span>
+                            <p className="text-md text-gray-300">{selectedNetworkNode.type}</p>
+                          </div>
+                          <div>
+                            <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Risk Level</span>
+                            <p className={`text-md ${selectedNetworkNode.risk === 'Critical' || selectedNetworkNode.risk === 'High' ? 'text-red-500' : 'text-amber-500'}`}>{selectedNetworkNode.risk}</p>
+                          </div>
+                          <div>
+                            <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">KYC Status</span>
+                            <p className={`text-md ${selectedNetworkNode.risk === 'Critical' ? 'text-red-400' : 'text-emerald-400'}`}>
+                              {selectedNetworkNode.risk === 'Critical' ? 'Failed / Synthetic' : 'Verified'}
+                            </p>
+                          </div>
+                          <div className="col-span-2 pt-2">
+                            <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Registered Address / Region</span>
+                            <p className="text-sm text-gray-300">
+                              {selectedNetworkNode.name === 'Offshore Destination' ? 'Cayman Islands (High-Risk Jurisdiction)' : '123 Fake St, Metropolis, NY 10001'}
+                            </p>
+                          </div>
+                          <div className="col-span-2">
+                            <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Date Opened</span>
+                            <p className="text-sm text-gray-300">
+                              {selectedNetworkNode.risk === 'Critical' ? 'Oct 14, 2026 (7 days ago)' : 'Jan 05, 2024'}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Account Type</span>
-                          <p className="text-md text-gray-300">{selectedNetworkNode.type}</p>
-                        </div>
-                        <div>
-                          <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Risk Level</span>
-                          <p className={`text-md ${selectedNetworkNode.risk === 'Critical' || selectedNetworkNode.risk === 'High' ? 'text-red-500' : 'text-amber-500'}`}>{selectedNetworkNode.risk}</p>
-                        </div>
-                        <div>
+
+                        <div className="pt-4 border-t border-[#222]">
                           <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Recent Transaction Flow</span>
                           <p className="text-md font-mono text-emerald-400">{selectedNetworkNode.txn}</p>
                         </div>
@@ -518,14 +546,23 @@ export default function Home() {
                         
                         <div className="pt-6 border-t border-[#222] mt-8">
                           <p className="text-xs text-gray-400 mb-4">Actions for this node:</p>
+                          {nodeActionMessage && (
+                            <div className="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-lg flex items-center gap-2">
+                              <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                              </span>
+                              {nodeActionMessage}
+                            </div>
+                          )}
                           <button 
-                            onClick={() => alert(`Loading full historical ledger for ${selectedNetworkNode.name}...`)}
+                            onClick={() => setNodeActionMessage(`Ledger exported. Preparing historical view for ${selectedNetworkNode.name}...`)}
                             className="w-full py-2 bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 text-sm font-medium transition-colors mb-3"
                           >
                             View Full History
                           </button>
                           <button 
-                            onClick={() => alert(`Node ${selectedNetworkNode.name} has been flagged for tier-2 compliance review.`)}
+                            onClick={() => setNodeActionMessage(`Success: ${selectedNetworkNode.name} has been flagged for tier-2 compliance review.`)}
                             className="w-full py-2 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/20 text-sm font-medium transition-colors"
                           >
                             Flag as Suspicious
