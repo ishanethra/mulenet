@@ -42,13 +42,37 @@ with open('DataSet.csv', 'r') as csvfile:
         account_id = f"AC-{random.randint(100000, 999999)}"
         exposure = f"${random.randint(10, 999)}K" if score < 70 else f"${random.uniform(1.0, 10.0):.1f}M"
         
+        try:
+            account_type = row[target_idx - 38]
+            date_opened = row[target_idx - 36]
+            region = "Urban" if row[target_idx - 34] == "U" else "Rural" if row[target_idx - 34] == "R" else row[target_idx - 34]
+            occupation = row[target_idx - 33].title()
+            gender = row[target_idx - 32]
+            segment = row[target_idx - 31].title()
+            age = row[target_idx - 30]
+        except IndexError:
+            account_type = "Unknown"
+            date_opened = "Unknown"
+            region = "Unknown"
+            occupation = "Unknown"
+            gender = "U"
+            segment = "Retail"
+            age = "0"
+            
         account = {
             "id": account_id,
             "customer": f"Entity-{idx+1}",
             "score": score,
             "typology": random.choice(typologies),
             "exposure": exposure,
-            "ring": f"{random.randint(1, 15):02d}"
+            "ring": f"{random.randint(1, 15):02d}",
+            "accountType": account_type,
+            "dateOpened": date_opened,
+            "region": region,
+            "occupation": occupation,
+            "gender": gender,
+            "segment": segment,
+            "age": age
         }
         accounts.append(account)
         idx += 1

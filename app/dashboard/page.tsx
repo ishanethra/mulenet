@@ -293,23 +293,23 @@ export default function Home() {
         {/* Telemetry & Device Intelligence */}
         <div className="space-y-6">
           <div className="bg-[#111] p-6 rounded-xl border border-[#222]">
-            <h2 className="text-sm font-semibold mb-4 text-gray-300 border-b border-[#222] pb-3 uppercase tracking-wider">Device & Entity Telemetry</h2>
+            <h2 className="text-sm font-semibold mb-4 text-gray-300 border-b border-[#222] pb-3 uppercase tracking-wider">Account Telemetry & KYC</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
               <div>
-                <p className="text-gray-500 mb-1"><InfoTooltip term="Primary IP Address" desc="The internet address the suspect is using to connect." /></p>
-                <p className="text-red-400 font-mono">194.26.x.x (VPN)</p>
+                <p className="text-gray-500 mb-1"><InfoTooltip term="Account Segment" desc="The retail/corporate classification of the account." /></p>
+                <p className="text-gray-300">{selectedAccount.segment} ({selectedAccount.accountType})</p>
               </div>
               <div>
-                <p className="text-gray-500 mb-1"><InfoTooltip term="Geo Mismatch" desc="When the user's stated location doesn't match their internet location." /></p>
-                <p className="text-gray-300">Mumbai vs Cyprus</p>
+                <p className="text-gray-500 mb-1"><InfoTooltip term="Demographics" desc="Customer background information." /></p>
+                <p className="text-gray-300">{selectedAccount.occupation} • Age {selectedAccount.age} ({selectedAccount.gender})</p>
               </div>
               <div>
-                <p className="text-gray-500 mb-1"><InfoTooltip term="Device Hash" desc="A unique digital fingerprint of the computer or phone used." /></p>
-                <p className="text-gray-300">Linked to 4 entities</p>
+                <p className="text-gray-500 mb-1"><InfoTooltip term="Region / Jurisdiction" desc="Registered operating region." /></p>
+                <p className="text-gray-300">{selectedAccount.region} Branch</p>
               </div>
               <div>
-                <p className="text-gray-500 mb-1"><InfoTooltip term="KYC Status" desc="Know Your Customer (Identity Verification) check results." /></p>
-                  <p className="text-amber-500"><InfoTooltip term="Synthetic Suspect" desc="An account created using a blend of real and fake identity details to bypass checks." /></p>
+                <p className="text-gray-500 mb-1"><InfoTooltip term="Account Age" desc="When the account was originally opened." /></p>
+                  <p className="text-gray-300">Opened: {selectedAccount.dateOpened}</p>
                 </div>
               </div>
             </div>
@@ -467,10 +467,10 @@ export default function Home() {
                         <Scatter 
                           name="Connected Accounts" 
                           data={[
-                            { x: 10, y: 20, z: 200, name: 'Suspect Origin', type: 'External Bank', risk: 'High', txn: '$45,200 (Incoming)' },
+                            { x: 10, y: 20, z: 200, name: dynamicAccounts[1]?.id || 'AC-100001', type: 'External Bank', risk: 'High', txn: '$45,200 (Incoming)' },
                             { x: 15, y: 35, z: 600, name: selectedAccount.id, type: 'Target Account', risk: 'Critical', txn: 'Main Node' },
-                            { x: 25, y: 45, z: 200, name: 'Pass-through A', type: 'Checking', risk: 'Medium', txn: '$12,000 (Outgoing)' },
-                            { x: 20, y: 15, z: 200, name: 'Pass-through B', type: 'Savings', risk: 'Medium', txn: '$33,200 (Outgoing)' },
+                            { x: 25, y: 45, z: 200, name: dynamicAccounts[2]?.id || 'AC-100002', type: 'Checking', risk: 'Medium', txn: '$12,000 (Outgoing)' },
+                            { x: 20, y: 15, z: 200, name: dynamicAccounts[3]?.id || 'AC-100003', type: 'Savings', risk: 'Medium', txn: '$33,200 (Outgoing)' },
                             { x: 35, y: 30, z: 800, name: 'Offshore Destination', type: 'International', risk: 'Critical', txn: '$45,200 (Consolidated)' },
                           ]} 
                           fill="#3b82f6" 
@@ -522,15 +522,19 @@ export default function Home() {
                             </p>
                           </div>
                           <div className="col-span-2 pt-2">
-                            <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Registered Address / Region</span>
-                            <p className="text-sm text-gray-300">
-                              {selectedNetworkNode.name === 'Offshore Destination' ? 'Cayman Islands (High-Risk Jurisdiction)' : '123 Fake St, Metropolis, NY 10001'}
+                            <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Account Registration</span>
+                            <p className="text-md text-gray-300">
+                              {selectedNetworkNode.name.startsWith('AC-') 
+                                ? (dynamicAccounts.find(a => a.id === selectedNetworkNode.name)?.region || 'Unknown') + " Branch"
+                                : selectedNetworkNode.name === 'Offshore Destination' ? 'Cayman Islands' : '123 Fake St, Metropolis, NY'}
                             </p>
                           </div>
-                          <div className="col-span-2">
+                          <div>
                             <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Date Opened</span>
-                            <p className="text-sm text-gray-300">
-                              {selectedNetworkNode.risk === 'Critical' ? 'Oct 14, 2026 (7 days ago)' : 'Jan 05, 2024'}
+                            <p className="text-md text-gray-300">
+                              {selectedNetworkNode.name.startsWith('AC-') 
+                                ? (dynamicAccounts.find(a => a.id === selectedNetworkNode.name)?.dateOpened || 'Unknown')
+                                : selectedNetworkNode.risk === 'Critical' ? 'Oct 14, 2026' : 'Jan 05, 2024'}
                             </p>
                           </div>
                         </div>
@@ -571,7 +575,10 @@ export default function Home() {
                           )}
                           <button 
                             onClick={() => {
-                              if (selectedNetworkNode.name.startsWith('AC-')) {
+                              if (selectedNetworkNode.name === selectedAccount.id) {
+                                setNodeActionMessage(`You are already viewing the full history and ledger for ${selectedAccount.id} in the background pane.`);
+                                setTimeout(() => setIsNetworkModalOpen(false), 2000);
+                              } else if (selectedNetworkNode.name.startsWith('AC-')) {
                                 setIsNetworkModalOpen(false);
                                 openReport(selectedNetworkNode.name);
                               } else {
