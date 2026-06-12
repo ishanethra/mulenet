@@ -23,10 +23,11 @@ export default function LandingPage() {
 
   const avatarPositions = [
     { right: '5%', bottom: '5%', scale: 1 },       // Step 0: Initial Right
-    { right: '40%', bottom: '10%', scale: 1.1 },   // Step 1: Moving left/center
-    { right: '10%', bottom: '15%', scale: 0.95 },  // Step 2: Back right, slightly up
-    { right: '35%', bottom: '5%', scale: 1.15 },   // Step 3: Center close up
-    { right: '10%', bottom: '5%', scale: 1 },      // Step 4: Final Right
+    { right: '15%', bottom: '5%', scale: 1.05 },   // Step 1: Moving slightly left
+    { right: '5%', bottom: '8%', scale: 0.95 },    // Step 2: Back right, slightly up
+    { right: '10%', bottom: '5%', scale: 1.1 },    // Step 3: Step forward
+    { right: '5%', bottom: '5%', scale: 1 },       // Step 4: Final Right
+    { right: '5%', bottom: '5%', scale: 1 }        // Step 5
   ];
 
   useEffect(() => {
@@ -195,7 +196,7 @@ export default function LandingPage() {
           </div>
 
           <Image 
-            src="/3d_human_explainer_1781263585764.png" 
+            src="/3d-avatar.png" 
             alt="AI Investigation Explainer" 
             width={450} 
             height={600} 
