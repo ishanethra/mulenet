@@ -133,7 +133,7 @@ def list_accounts() -> dict:
             "customer": f"Entity {idx} (From Dataset)",
             "segment": segments[idx % len(segments)],
             "score": score,
-            "priority": "High" if score > 85 else "Medium" if score > 70 else "Small",
+            "priority": "High" if score > 85 else "Medium" if score > 70 else "Low",
             "exposure": f"₹{(idx % 45) + 5.5:.1f}L",
             "typology": typologies[idx % len(typologies)],
             "ring": f"#{idx % 8 + 1}" if is_mule else "None",

@@ -124,11 +124,11 @@ export default function Home() {
   const pieData = useMemo(() => {
     const p1 = dynamicAccounts.filter(a => a.priority === 'High' || a.priority === 'P1').length;
     const p2 = dynamicAccounts.filter(a => a.priority === 'Medium' || a.priority === 'P2').length;
-    const p3 = dynamicAccounts.filter(a => a.priority === 'Small' || a.priority === 'P3').length;
+    const p3 = dynamicAccounts.filter(a => a.priority === 'Low' || a.priority === 'P3').length;
     return [
       { name: 'High', value: p1 },
       { name: 'Medium', value: p2 },
-      { name: 'Small', value: p3 }
+      { name: 'Low', value: p3 }
     ];
   }, [dynamicAccounts]);
 
@@ -444,7 +444,7 @@ export default function Home() {
             <div className="flex gap-4 text-xs font-medium mt-2">
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500"></span> High</span>
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Medium</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Small</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Low</span>
             </div>
           </div>
 
@@ -496,7 +496,7 @@ export default function Home() {
                         (acct.priority === 'Medium' || acct.priority === 'P2') ? 'bg-[#261810] text-[#ffb076] border border-[#402414]' : 
                         'bg-[#121a24] text-[#8ab4f8] border border-[#1a2c42]'
                       }`}>
-                        {acct.priority === 'P1' ? 'High' : acct.priority === 'P2' ? 'Medium' : acct.priority === 'P3' ? 'Small' : acct.priority}
+                        {acct.priority === 'P1' ? 'High' : acct.priority === 'P2' ? 'Medium' : acct.priority === 'P3' ? 'Low' : acct.priority}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-gray-300 truncate max-w-[200px]">{acct.typology}</td>
