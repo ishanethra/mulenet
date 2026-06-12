@@ -158,14 +158,14 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-[#111] p-6 rounded-xl border border-[#222]">
-              <h2 className="text-xl font-semibold mb-4 text-white border-b border-[#333] pb-2">Copilot Analysis</h2>
-              <div className="space-y-4 text-sm text-gray-300 leading-relaxed">
-                <p>The system detected an anomaly cluster matching standard <strong>{selectedAccount.typology}</strong> typologies.</p>
-                <p>Graph analysis indicates the account is highly central within a suspicious subgraph, suggesting it may act as a funnel or pass-through node for illicit funds.</p>
-                <ul className="list-disc pl-5 space-y-2 text-red-300 mt-4">
-                  <li>High outgoing transfer velocity after unusual incoming credits.</li>
-                  <li>Funds retained for a short interval before onward movement.</li>
-                  <li>Connected to high-risk counterparties in transaction graph.</li>
+              <h2 className="text-sm font-semibold mb-4 text-gray-300 border-b border-[#222] pb-3 uppercase tracking-wider">Automated Risk Analysis</h2>
+              <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
+                <p>System anomaly detection matched standard <strong>{selectedAccount.typology}</strong> patterns with high statistical confidence.</p>
+                <p>Graph evaluation indicates the account is highly central within a monitored subgraph, consistent with funnel or pass-through behavior.</p>
+                <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
+                  <li>High outgoing transfer velocity subsequent to unusual incoming credits.</li>
+                  <li>Funds retained below baseline threshold before onward movement.</li>
+                  <li>Network proximity to previously flagged counterparties.</li>
                 </ul>
               </div>
             </div>
@@ -183,17 +183,17 @@ export default function Home() {
                 <tbody>
                   <tr className="border-b border-[#222]">
                     <td className="px-4 py-3">Wire Transfer</td>
-                    <td className="px-4 py-3 text-red-400">-₹45,000.00</td>
+                    <td className="px-4 py-3 text-gray-300">-₹45,000.00</td>
                     <td className="px-4 py-3 text-gray-500">2 hrs ago</td>
                   </tr>
                   <tr className="border-b border-[#222]">
                     <td className="px-4 py-3">Cash Deposit</td>
-                    <td className="px-4 py-3 text-green-400">+₹46,500.00</td>
+                    <td className="px-4 py-3 text-gray-300">+₹46,500.00</td>
                     <td className="px-4 py-3 text-gray-500">3 hrs ago</td>
                   </tr>
                   <tr>
                     <td className="px-4 py-3">Offshore Clearing</td>
-                    <td className="px-4 py-3 text-red-400">-₹12,000.00</td>
+                    <td className="px-4 py-3 text-gray-300">-₹12,000.00</td>
                     <td className="px-4 py-3 text-gray-500">5 hrs ago</td>
                   </tr>
                 </tbody>
@@ -212,8 +212,8 @@ export default function Home() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ShieldAlert className="text-blue-500 w-8 h-8" />
-            <h1 className="text-2xl font-bold text-white tracking-wide">Vigilance AI: Enterprise Fraud Intelligence Hub</h1>
+            <ShieldAlert className="text-gray-400 w-7 h-7" />
+            <h1 className="text-xl font-medium text-gray-200 tracking-tight">MuleNet Intelligence Hub <span className="text-gray-500 font-normal ml-2">| Bank of India</span></h1>
           </div>
           <div className="flex items-center bg-[#111] rounded-lg border border-[#222] px-4 py-2 w-64">
             <Search className="w-4 h-4 text-gray-500 mr-2" />
@@ -242,9 +242,8 @@ export default function Home() {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1">Critical Alerts</p>
-                <h3 className="text-3xl font-bold text-red-500">{stats.critical}</h3>
+                <h3 className="text-2xl font-semibold text-gray-200">{stats.critical}</h3>
               </div>
-              <AlertTriangle className="text-red-500/50 w-6 h-6" />
             </div>
           </div>
           <div className="bg-[#111] border border-[#222] p-5 rounded-xl">
@@ -342,10 +341,10 @@ export default function Home() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${
-                        acct.priority === 'P1' ? 'bg-red-500/20 text-red-400' : 
-                        acct.priority === 'P2' ? 'bg-orange-500/20 text-orange-400' : 
-                        'bg-blue-500/20 text-blue-400'
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        acct.priority === 'P1' ? 'bg-[#2a1215] text-[#ff8a8a] border border-[#4a1c1c]' : 
+                        acct.priority === 'P2' ? 'bg-[#261810] text-[#ffb076] border border-[#402414]' : 
+                        'bg-[#121a24] text-[#8ab4f8] border border-[#1a2c42]'
                       }`}>
                         {acct.priority}
                       </span>

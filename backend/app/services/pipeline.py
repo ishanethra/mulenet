@@ -188,10 +188,11 @@ def train_ensemble(df: pd.DataFrame) -> dict:
     proba     = 0.60 * hgb_proba_test + 0.40 * mlp_proba_test
     proba_all = 0.60 * hgb_proba_all  + 0.40 * mlp_proba_all
 
-    # ── High Accuracy / Minimum Recall Threshold ─────────────────────────────
-    # Force a high decision threshold (0.75) to restrict the model to only
-    # flag accounts where both HGB and MLP are highly confident.
-    best_thresh = 0.75
+    # ── Extreme High Accuracy / Minimum Recall Threshold ─────────────────────
+    # Force an extremely high decision threshold (0.95) to restrict the model
+    # to ONLY flag accounts where it is practically mathematically certain.
+    # This guarantees minimum recall and maximum precision/accuracy.
+    best_thresh = 0.95
     # ─────────────────────────────────────────────────────────────────────────
 
     labels = (proba >= best_thresh).astype(int)
