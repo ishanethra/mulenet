@@ -164,7 +164,7 @@ export default function Home() {
     const avgScore = dynamicAccounts.reduce((acc, curr) => acc + curr.score, 0) / (dynamicAccounts.length || 1);
     
     return {
-      exposure: `₹${totalExposure.toFixed(1)}L`,
+      exposure: totalExposure >= 100 ? `₹${(totalExposure / 100).toFixed(2)}Cr` : `₹${totalExposure.toFixed(1)}L`,
       critical,
       avgScore: avgScore.toFixed(1)
     };
