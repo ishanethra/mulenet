@@ -200,7 +200,30 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Telemetry & Device Intelligence */}
+          <div className="mt-8 bg-[#111] p-6 rounded-xl border border-[#222]">
+            <h2 className="text-sm font-semibold mb-4 text-gray-300 border-b border-[#222] pb-3 uppercase tracking-wider">Device & Entity Telemetry</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+              <div>
+                <p className="text-gray-500 mb-1">Primary IP Address</p>
+                <p className="text-red-400 font-mono">194.26.x.x (VPN Detected)</p>
+              </div>
+              <div>
+                <p className="text-gray-500 mb-1">Geolocation Mismatch</p>
+                <p className="text-gray-300">Registered: Mumbai | Login: Cyprus</p>
+              </div>
+              <div>
+                <p className="text-gray-500 mb-1">Device Fingerprint</p>
+                <p className="text-gray-300">Shared with 4 other flagged entities</p>
+              </div>
+              <div>
+                <p className="text-gray-500 mb-1">KYC Status</p>
+                <p className="text-amber-500">Synthetic Identity Suspected</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div className="bg-[#111] p-6 rounded-xl border border-[#222]">
               <h2 className="text-sm font-semibold mb-4 text-gray-300 border-b border-[#222] pb-3 uppercase tracking-wider">Automated Risk Analysis</h2>
               
