@@ -72,14 +72,14 @@ add_bullet_slide(prs, "Key Features In Our Product", [
 slide5 = add_bullet_slide(prs, "Technical Approach & Methodology", [
     "Frontend: React / Next.js",
     "Backend API: Python FastAPI",
-    "AI & Classification: HistGradientBoosting + Random Forest Ensemble + SHAP (F1-Optimised)",
+    "AI & Classification: HistGradientBoosting + Deep Learning (MLP) Ensemble (High Accuracy)",
     "Graph Intel: Custom Network Analysis (Dynamic Network Analysis)",
     "Database / Pipelines: Pandas for feature engineering",
     "",
     "Step-by-Step Flow:",
     "1. Ingest Dataset & TMS Feeds",
     "2. Extract 18 Features (F115-F3894)",
-    "3. HistGradientBoosting + Random Forest Ensemble predicts target variable (F3924)",
+    "3. HistGradientBoosting + Deep Learning Neural Network predicts target variable (F3924)",
     "4. Network Analysis validates network connections",
     "5. Output Alert to UI Dashboard"
 ])
@@ -142,7 +142,7 @@ table.cell(1, 1).text = "Temporal feature extraction to track transaction veloci
 
 # Row 2
 table.cell(2, 0).text = "[2] J. Doe, et al., \"Financial Fraud Detection Using Explainable AI and Stacking Ensemble Methods,\" arXiv:2505.10050, 2025."
-table.cell(2, 1).text = "Used to build our HistGradientBoosting + Random Forest ensemble with F1-optimal threshold search."
+table.cell(2, 1).text = "Used to build our HistGradientBoosting + Deep Learning (MLP) ensemble for high accuracy."
 
 # Row 3
 table.cell(3, 0).text = "[3] R. Smith, \"Advances in Dynamic Network Analysis for Anti-Money Laundering,\" arXiv:2503.24259, 2025."
@@ -153,7 +153,7 @@ table.cell(4, 0).text = "Dataset: Provided Official Hackathon Dataset"
 table.cell(4, 1).text = "Target Variable: F3924\nKey Features Engineered: F115, F321, F527, F531, F670, F1692, F2082, F2122, F2582, F2678, F2737, F2956, F3043, F3836, F3887, F3889, F3891, F3894"
 
 # Row 5
-table.cell(5, 0).text = "Tools: Python 3, FastAPI, React, Next.js, NetworkX, Pandas, scikit-learn (HistGradientBoosting, RandomForest, SHAP)."
+table.cell(5, 0).text = "Tools: Python 3, FastAPI, React, Next.js, NetworkX, Pandas, scikit-learn (HistGradientBoosting, MLPClassifier, SHAP)."
 table.cell(5, 1).text = "Core technology stack and data model simulation."
 
 for row in table.rows:

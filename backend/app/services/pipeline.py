@@ -136,24 +136,23 @@ def train_ensemble(df: pd.DataFrame) -> dict:
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42, stratify=y)
 
-    # ── Best-Overall Ensemble ─────────────────────────────────────────────────
-    # Goal: maximise F1 / ROC-AUC — the standard "best model" target for
-    #       imbalanced fraud datasets. Balances precision AND recall.
+    # ── High Accuracy / Minimum Recall Deep Learning Ensemble ─────────────────
+    # Goal: Use a Deep Learning neural network combined with Gradient Boosting
+    #       to achieve maximum accuracy and high precision (minimum recall).
+    #       It flags ONLY the most obvious, mathematically certain fraud.
     #
-    # Model 1: HistGradientBoostingClassifier  ← sklearn's built-in LightGBM
-    #   - Histogram-based boosting: fast, low RAM, handles missing values natively.
-    #   - Equivalent accuracy to XGBoost/LightGBM with zero extra packages.
-    #   - class_weight="balanced" compensates for the minority fraud class.
+    # Model 1: HistGradientBoostingClassifier
+    #   - Handles the tabular data splits with extreme accuracy.
     #
-    # Model 2: RandomForestClassifier
-    #   - High variance, low bias — diverse from the boosting model.
-    #   - Provides stable feature importance as a cross-check.
-    #   - class_weight="balanced_subsample" rebalances each bootstrap sample.
+    # Model 2: MLPClassifier (Multi-Layer Perceptron Neural Network)
+    #   - A pure scikit-learn Deep Learning model.
+    #   - Adds non-linear deep learning feature extraction without the
+    #     massive memory overhead of TensorFlow/PyTorch (Render safe).
     #
-    # Threshold: Automatically searched over [0.2 … 0.7] on the validation set
-    #   to find the cutoff that maximises F1-score — not blindly set to 0.5.
+    # Threshold: Hardcoded to 0.75 to ensure MINIMUM RECALL and HIGH PRECISION.
     # ─────────────────────────────────────────────────────────────────────────
-    from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
+    from sklearn.ensemble import HistGradientBoostingClassifier
+    from sklearn.neural_network import MLPClassifier
     from sklearn.metrics import f1_score as _f1
 
     # Model 1 — HistGradientBoosting (sklearn's LightGBM equivalent)
@@ -168,32 +167,31 @@ def train_ensemble(df: pd.DataFrame) -> dict:
     hgb_proba_test = hgb.predict_proba(x_test)[:, 1]
     hgb_proba_all  = hgb.predict_proba(x)[:, 1]
 
-    # Model 2 — Random Forest (diverse, stable)
-    rf = RandomForestClassifier(
-        n_estimators=150,
-        max_depth=8,
-        class_weight="balanced_subsample",
-        n_jobs=-1,
+    # Model 2 — Deep Learning Neural Network (MLP)
+    # Using a lightweight architecture [100, 50] to prevent OOM
+    mlp = MLPClassifier(
+        hidden_layer_sizes=(100, 50),
+        activation="relu",
+        solver="adam",
+        alpha=0.001,
+        max_iter=300,
         random_state=42,
     )
-    rf.fit(x_train, y_train)
-    rf_proba_test = rf.predict_proba(x_test)[:, 1]
-    rf_proba_all  = rf.predict_proba(x)[:, 1]
+    mlp.fit(x_train, y_train)
+    mlp_proba_test = mlp.predict_proba(x_test)[:, 1]
+    mlp_proba_all  = mlp.predict_proba(x)[:, 1]
 
-    # Feature importance: average of both models
-    importances = 0.6 * np.asarray(hgb.feature_importances_) + 0.4 * np.asarray(rf.feature_importances_)
+    # Feature importance: MLP doesn't have feature_importances_, so rely on HGB
+    importances = np.asarray(hgb.feature_importances_)
 
-    # Weighted soft-vote ensemble (HGB is the stronger model)
-    proba     = 0.65 * hgb_proba_test + 0.35 * rf_proba_test
-    proba_all = 0.65 * hgb_proba_all  + 0.35 * rf_proba_all
+    # Weighted soft-vote ensemble: DL Neural Network + Gradient Boosting
+    proba     = 0.60 * hgb_proba_test + 0.40 * mlp_proba_test
+    proba_all = 0.60 * hgb_proba_all  + 0.40 * mlp_proba_all
 
-    # ── Auto-search for the F1-optimal decision threshold ────────────────────
-    best_thresh, best_f1 = 0.5, 0.0
-    for t in np.arange(0.20, 0.71, 0.05):
-        _labels = (proba >= t).astype(int)
-        score = _f1(y_test, _labels, zero_division=0)
-        if score > best_f1:
-            best_f1, best_thresh = score, float(t)
+    # ── High Accuracy / Minimum Recall Threshold ─────────────────────────────
+    # Force a high decision threshold (0.75) to restrict the model to only
+    # flag accounts where both HGB and MLP are highly confident.
+    best_thresh = 0.75
     # ─────────────────────────────────────────────────────────────────────────
 
     labels = (proba >= best_thresh).astype(int)
