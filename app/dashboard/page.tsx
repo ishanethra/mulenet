@@ -36,6 +36,12 @@ export default function Home() {
   const [isReportView, setIsReportView] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<any>(null);
 
+  // Action Button States
+  const [isFreezing, setIsFreezing] = useState(false);
+  const [isFrozen, setIsFrozen] = useState(false);
+  const [isDispatching, setIsDispatching] = useState(false);
+  const [isRfiSent, setIsRfiSent] = useState(false);
+
   useEffect(() => {
     // Check if we are in the report view (new tab)
     const params = new URLSearchParams(window.location.search);
@@ -119,12 +125,30 @@ export default function Home() {
   }, []);
 
   const openReport = (id: string) => {
+    setIsFrozen(false);
+    setIsRfiSent(false);
     window.open(`/dashboard?account=${id}`, '_blank');
   };
 
   const closeReport = () => {
     window.close();
     setIsReportView(false);
+  };
+
+  const handleFreeze = () => {
+    setIsFreezing(true);
+    setTimeout(() => {
+      setIsFreezing(false);
+      setIsFrozen(true);
+    }, 1200);
+  };
+
+  const handleDispatch = () => {
+    setIsDispatching(true);
+    setTimeout(() => {
+      setIsDispatching(false);
+      setIsRfiSent(true);
+    }, 1500);
   };
 
   if (loading) {
@@ -144,12 +168,32 @@ export default function Home() {
               <p className="text-gray-400 mt-1">Risk Score: {selectedAccount.score}/100 | Typology: {selectedAccount.typology}</p>
             </div>
             <div className="flex gap-4">
-              <button className="px-6 py-2 bg-red-600/20 text-red-500 border border-red-500/50 rounded hover:bg-red-600/30 transition font-medium flex items-center gap-2">
-                <Lock className="w-4 h-4" /> Freeze Account
+              <button 
+                onClick={handleFreeze}
+                disabled={isFrozen || isFreezing}
+                className={`px-6 py-2 border rounded transition font-medium flex items-center gap-2 ${
+                  isFrozen 
+                    ? 'bg-green-600/20 text-green-500 border-green-500/50 cursor-not-allowed' 
+                    : 'bg-red-600/20 text-red-500 border-red-500/50 hover:bg-red-600/30'
+                }`}
+              >
+                <Lock className="w-4 h-4" /> 
+                {isFreezing ? 'Processing...' : isFrozen ? 'Account Frozen' : 'Freeze Account'}
               </button>
-              <button className="px-6 py-2 bg-blue-600/20 text-blue-400 border border-blue-500/50 rounded hover:bg-blue-600/30 transition font-medium flex items-center gap-2">
-                <MessageSquare className="w-4 h-4" /> Dispatch RFI
+              
+              <button 
+                onClick={handleDispatch}
+                disabled={isRfiSent || isDispatching}
+                className={`px-6 py-2 border rounded transition font-medium flex items-center gap-2 ${
+                  isRfiSent 
+                    ? 'bg-green-600/20 text-green-500 border-green-500/50 cursor-not-allowed' 
+                    : 'bg-blue-600/20 text-blue-400 border-blue-500/50 hover:bg-blue-600/30'
+                }`}
+              >
+                <MessageSquare className="w-4 h-4" /> 
+                {isDispatching ? 'Transmitting...' : isRfiSent ? 'RFI Dispatched' : 'Dispatch RFI'}
               </button>
+              
               <button onClick={closeReport} className="px-6 py-2 bg-[#222] text-gray-300 border border-[#333] rounded hover:bg-[#333] transition font-medium">
                 Back to Dashboard
               </button>
