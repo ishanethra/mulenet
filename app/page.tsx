@@ -11,6 +11,7 @@ export default function LandingPage() {
   // Auto-start on load
   const [isStarted, setIsStarted] = useState(true);
   const [storyStep, setStoryStep] = useState(0);
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
 
   const storyFrames = [
     "Hello. I am your MuleNet AI Investigator.",
@@ -38,10 +39,17 @@ export default function LandingPage() {
       window.speechSynthesis.cancel(); // Stop any previous speech
       const utterance = new SpeechSynthesisUtterance(storyFrames[storyStep]);
       
-      // Try to find a good female English voice
       const voices = window.speechSynthesis.getVoices();
-      const femaleVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Female'));
-      if (femaleVoice) utterance.voice = femaleVoice;
+      let chosenVoice;
+      
+      if (selectedVoiceURI) {
+        chosenVoice = voices.find(v => v.voiceURI === selectedVoiceURI);
+      } else {
+        chosenVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Female')) || voices[0];
+        if (chosenVoice) setSelectedVoiceURI(chosenVoice.voiceURI);
+      }
+
+      if (chosenVoice) utterance.voice = chosenVoice;
       
       utterance.pitch = 1.1;
       utterance.rate = 1.0;
@@ -152,29 +160,6 @@ export default function LandingPage() {
           transform: `scale(${avatarPositions[storyStep]?.scale || 1})`
         }}
       >
-        {/* Holographic Speech / Story Panel */}
-        <div className="absolute right-[80%] bottom-[40%] w-80 bg-[#0a0a0a]/90 backdrop-blur-xl border border-blue-500/30 p-6 rounded-2xl shadow-[0_0_40px_rgba(59,130,246,0.2)] z-30 transition-opacity duration-300 pointer-events-auto">
-          <div className="flex items-center gap-3 mb-4 border-b border-[#222] pb-3">
-            <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
-            <p className="text-xs font-mono text-blue-400 tracking-widest uppercase">AI Investigator</p>
-          </div>
-          
-          <h3 key={storyStep} className="text-lg font-medium text-gray-100 leading-relaxed min-h-[80px] animate-fade-in">
-            {storyFrames[storyStep]}
-          </h3>
-          
-          {/* Playback Progress */}
-          <div className="mt-4 pt-4 border-t border-[#222] flex items-center gap-3">
-            <div className="flex-1 h-1 bg-[#222] rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-blue-500 transition-all duration-[5000ms] ease-linear" 
-                style={{ width: `${((storyStep + 1) / storyFrames.length) * 100}%` }}
-              ></div>
-            </div>
-            <span className="text-xs text-gray-500 font-mono">00:0{storyStep * 5} / 00:30</span>
-          </div>
-        </div>
-
         {/* The 3D Human Avatar */}
         <div className="relative animate-float pointer-events-auto">
           {/* Background Glow attached to avatar */}
