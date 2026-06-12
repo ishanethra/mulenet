@@ -49,6 +49,10 @@ def organization_dataset_path() -> Path:
     raise FileNotFoundError("Organization dataset not found. Expected dataset.csv or DataSet.csv in the project root.")
 
 
+@app.get("/")
+def root_health():
+    return {"status": "ok", "message": "MuleNet Backend API Live"}
+
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok", "service": "mulenet-api"}
