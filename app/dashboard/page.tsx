@@ -51,7 +51,7 @@ const InfoTooltip = ({ term, desc }: { term: string, desc: string }) => (
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function Home() {
-  const [dynamicAccounts, setDynamicAccounts] = useState<any[]>(fallbackAccounts);
+  const [dynamicAccounts, setDynamicAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [isReportView, setIsReportView] = useState(false);
@@ -161,14 +161,28 @@ export default function Home() {
 
   const stats = useMemo(() => {
     const totalExposure = dynamicAccounts.reduce((acc, curr) => {
-      const val = parseFloat(curr.exposure.replace('₹', '').replace('L', ''));
-      return acc + (isNaN(val) ? 0 : val);
+      let val = 0;
+      if (curr.exposure) {
+        let str = String(curr.exposure).toUpperCase();
+        let num = parseFloat(str.replace(/[^0-9.]/g, ''));
+        if (!isNaN(num)) {
+          if (str.includes('M')) val = num * 1000000;
+          else if (str.includes('K')) val = num * 1000;
+          else if (str.includes('L')) val = num * 100000; // fallback support
+          else val = num;
+        }
+      }
+      return acc + val;
     }, 0);
+    
+    // Convert back to Lakhs for standard formatting
+    const exposureInLakhs = totalExposure / 100000;
+    
     const critical = dynamicAccounts.filter(a => a.score > 80).length;
     const avgScore = dynamicAccounts.reduce((acc, curr) => acc + curr.score, 0) / (dynamicAccounts.length || 1);
     
     return {
-      exposure: totalExposure >= 100 ? `₹${(totalExposure / 100).toFixed(2)}Cr` : `₹${totalExposure.toFixed(1)}L`,
+      exposure: exposureInLakhs >= 100 ? `₹${(exposureInLakhs / 100).toFixed(2)}Cr` : `₹${exposureInLakhs.toFixed(1)}L`,
       critical,
       avgScore: avgScore.toFixed(1)
     };
