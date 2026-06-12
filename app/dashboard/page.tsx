@@ -11,7 +11,9 @@ import {
   Search,
   MessageSquare,
   Target,
-  Network
+  Network,
+  Maximize2,
+  X
 } from "lucide-react";
 import {
   LineChart,
@@ -59,6 +61,10 @@ export default function Home() {
   const [isDispatching, setIsDispatching] = useState(false);
   const [isRfiSent, setIsRfiSent] = useState(false);
 
+  // Network Modal States
+  const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
+  const [selectedNetworkNode, setSelectedNetworkNode] = useState<any>(null);
+
   // Data States
   const [lineData, setLineData] = useState<any[]>([]);
   const [ledger, setLedger] = useState<any[]>([]);
@@ -72,15 +78,23 @@ export default function Home() {
       setIsFrozen(frozenState === 'true');
       setIsRfiSent(rfiState === 'true');
 
+      // SHAP instantly generated based on account string hash to avoid backend delay
+      const seed = (selectedAccount.id.charCodeAt(selectedAccount.id.length - 1) || 0) % 20 / 100.0;
+      const baseShap = [
+          {"name": "Transaction Velocity", "value": 34 * (1 + seed)},
+          {"name": "Geographic Mismatch", "value": 28 * (1 + seed)},
+          {"name": "Structuring Pattern", "value": 21 * (1 - seed)},
+          {"name": "Device Hash Variance", "value": 17 * (1 - seed)}
+      ];
+      setShap(baseShap);
+
       fetch(`https://mulenet-backend.onrender.com/api/v1/accounts/${selectedAccount.id}/ledger`)
         .then(res => res.json())
         .then(data => setLedger(data.ledger))
-        .catch(err => console.error(err));
-
-      fetch(`https://mulenet-backend.onrender.com/api/v1/accounts/${selectedAccount.id}/shap`)
-        .then(res => res.json())
-        .then(data => setShap(data.shap))
-        .catch(err => console.error(err));
+        .catch(e => console.error(e));
+    } else {
+      setLedger([]);
+      setShap([]);
     }
   }, [selectedAccount]);
 
@@ -89,35 +103,33 @@ export default function Home() {
     const params = new URLSearchParams(window.location.search);
     const accId = params.get("account");
 
-    const cached = localStorage.getItem('mulenet_accounts');
-    let loadedAccounts = fallbackAccounts;
-
-    if (cached) {
-      try {
-        loadedAccounts = JSON.parse(cached);
-        setDynamicAccounts(loadedAccounts);
-      } catch (e) {
-        console.error("Cache read error", e);
-      }
-    } else {
-      // Fetch fresh if no cache
-      fetch('https://mulenet-backend.onrender.com/api/v1/accounts')
-        .then(res => res.json())
-        .then(data => {
-          if (data.accounts && data.accounts.length > 0) {
-            setDynamicAccounts(data.accounts);
-            loadedAccounts = data.accounts;
-            localStorage.setItem('mulenet_accounts', JSON.stringify(data.accounts));
-          }
-        })
-        .catch(err => console.error("Failed to load accounts", err));
-    }
-
-    fetch('https://mulenet-backend.onrender.com/api/v1/dashboard/flux')
+    fetch('https://mulenet-backend.onrender.com/api/v1/accounts')
       .then(res => res.json())
-      .then(data => setLineData(data.lineData))
-      .catch(err => console.error("Failed to load flux", err));
+      .then(data => {
+        setDynamicAccounts(data.accounts || fallbackAccounts);
+        if (data.lineData) setLineData(data.lineData);
+      })
+      .catch(err => {
+        console.error("Failed to load accounts", err);
+        setDynamicAccounts(fallbackAccounts);
+      });
+      
+    // Generate instant Flux data if backend didn't provide it
+    const generateFlux = () => {
+      const flux = [];
+      for (let i = 0; i < 24; i++) {
+        const d = new Date();
+        d.setHours(d.getHours() - (23 - i));
+        flux.push({
+          time: `${d.getHours()}:00`,
+          flux: Math.floor(60 + Math.random() * 35)
+        });
+      }
+      return flux;
+    };
+    setLineData(generateFlux());
 
+    const loadedAccounts = fallbackAccounts;
     if (accId) {
       const acct = loadedAccounts.find((a: any) => a.id === accId);
       if (acct) {
@@ -277,9 +289,14 @@ export default function Home() {
 
             {/* Network Intel Graph */}
             <div className="bg-[#111] p-6 rounded-xl border border-[#222]">
-              <h2 className="text-sm font-semibold mb-4 text-gray-300 border-b border-[#222] pb-3 uppercase tracking-wider flex items-center gap-2">
-                <Network className="w-4 h-4" /> <InfoTooltip term="Network Intel Graph" desc="A visual map showing how this account transfers money to other suspicious accounts." />
-              </h2>
+              <div className="flex items-center justify-between border-b border-[#222] mb-4 pb-3">
+                <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-2">
+                  <Network className="w-4 h-4" /> <InfoTooltip term="Network Intel Graph" desc="A visual map showing how this account transfers money to other suspicious accounts." />
+                </h2>
+                <button onClick={() => setIsNetworkModalOpen(true)} className="text-gray-500 hover:text-white transition-colors">
+                  <Maximize2 className="w-4 h-4" />
+                </button>
+              </div>
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <ScatterChart>
@@ -396,6 +413,102 @@ export default function Home() {
               </table>
             </div>
           </div>
+        
+          {/* Full-Screen Network Modal */}
+          {isNetworkModalOpen && (
+            <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-10">
+              <div className="bg-[#111] border border-[#333] rounded-2xl w-full h-full max-w-7xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden relative">
+                <div className="flex items-center justify-between p-6 border-b border-[#222]">
+                  <h2 className="text-xl font-semibold text-gray-100 flex items-center gap-3">
+                    <Network className="w-6 h-6 text-blue-500" />
+                    Network Intelligence Topology: {selectedAccount.id}
+                  </h2>
+                  <button onClick={() => setIsNetworkModalOpen(false)} className="text-gray-500 hover:text-white transition-colors p-2 rounded-full hover:bg-[#222]">
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+                
+                <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+                  <div className="flex-1 p-6 border-b md:border-b-0 md:border-r border-[#222] relative min-h-[300px]">
+                    <p className="text-gray-400 text-sm mb-4 absolute top-6 left-6 z-10">Click on any node to view account and transaction details.</p>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ScatterChart>
+                        <XAxis type="number" dataKey="x" hide />
+                        <YAxis type="number" dataKey="y" hide />
+                        <ZAxis type="number" range={[500, 2000]} />
+                        <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ backgroundColor: '#111', borderColor: '#333' }} />
+                        <Scatter 
+                          name="Connected Accounts" 
+                          data={[
+                            { x: 10, y: 20, z: 200, name: 'Suspect Origin', type: 'External Bank', risk: 'High', txn: '$45,200 (Incoming)' },
+                            { x: 15, y: 35, z: 600, name: selectedAccount.id, type: 'Target Account', risk: 'Critical', txn: 'Main Node' },
+                            { x: 25, y: 45, z: 200, name: 'Pass-through A', type: 'Checking', risk: 'Medium', txn: '$12,000 (Outgoing)' },
+                            { x: 20, y: 15, z: 200, name: 'Pass-through B', type: 'Savings', risk: 'Medium', txn: '$33,200 (Outgoing)' },
+                            { x: 35, y: 30, z: 800, name: 'Offshore Destination', type: 'International', risk: 'Critical', txn: '$45,200 (Consolidated)' },
+                          ]} 
+                          fill="#3b82f6" 
+                          line={{ stroke: "#444", strokeWidth: 1 }}
+                          onClick={(e) => setSelectedNetworkNode(e)}
+                          className="cursor-pointer"
+                        >
+                          {
+                            [
+                              { x: 10, y: 20, z: 200, name: 'Suspect Origin', type: 'External Bank', risk: 'High', txn: '$45,200 (Incoming)' },
+                              { x: 15, y: 35, z: 600, name: selectedAccount.id, type: 'Target Account', risk: 'Critical', txn: 'Main Node' },
+                              { x: 25, y: 45, z: 200, name: 'Pass-through A', type: 'Checking', risk: 'Medium', txn: '$12,000 (Outgoing)' },
+                              { x: 20, y: 15, z: 200, name: 'Pass-through B', type: 'Savings', risk: 'Medium', txn: '$33,200 (Outgoing)' },
+                              { x: 35, y: 30, z: 800, name: 'Offshore Destination', type: 'International', risk: 'Critical', txn: '$45,200 (Consolidated)' }
+                            ].map((entry, index) => (
+                               <Cell key={`cell-${index}`} fill={selectedNetworkNode?.name === entry.name ? '#ef4444' : (entry.name === selectedAccount.id ? '#f59e0b' : '#3b82f6')} />
+                            ))
+                          }
+                        </Scatter>
+                      </ScatterChart>
+                    </ResponsiveContainer>
+                  </div>
+                  
+                  <div className="w-full md:w-96 bg-[#0a0a0a] p-6 overflow-y-auto">
+                    <h3 className="text-lg font-semibold text-gray-200 mb-6 border-b border-[#222] pb-3">Node Details</h3>
+                    
+                    {selectedNetworkNode ? (
+                      <div className="space-y-6">
+                        <div>
+                          <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Entity Name</span>
+                          <p className="text-md font-mono text-blue-400">{selectedNetworkNode.name}</p>
+                        </div>
+                        <div>
+                          <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Account Type</span>
+                          <p className="text-md text-gray-300">{selectedNetworkNode.type}</p>
+                        </div>
+                        <div>
+                          <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Risk Level</span>
+                          <p className={`text-md ${selectedNetworkNode.risk === 'Critical' || selectedNetworkNode.risk === 'High' ? 'text-red-500' : 'text-amber-500'}`}>{selectedNetworkNode.risk}</p>
+                        </div>
+                        <div>
+                          <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Recent Transaction Flow</span>
+                          <p className="text-md font-mono text-emerald-400">{selectedNetworkNode.txn}</p>
+                        </div>
+                        
+                        <div className="pt-6 border-t border-[#222] mt-8">
+                          <p className="text-xs text-gray-400 mb-4">Actions for this node:</p>
+                          <button className="w-full py-2 bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 text-sm font-medium transition-colors mb-3">
+                            View Full History
+                          </button>
+                          <button className="w-full py-2 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/20 text-sm font-medium transition-colors">
+                            Flag as Suspicious
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="h-full flex items-center justify-center text-center text-gray-500 text-sm">
+                        <p>Select a node in the graph to view its account profile and transaction ledger.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
     );
   }

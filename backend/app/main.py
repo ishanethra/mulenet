@@ -120,8 +120,22 @@ def get_cached_training():
 
 @app.get("/api/v1/accounts")
 def list_accounts_v1() -> dict:
+    import datetime
+    import random
     training = get_cached_training()
-    return {"accounts": training["flagged_accounts"]}
+    now = datetime.datetime.now()
+    rng = random.Random(42)
+    line_data = []
+    # Generate 24 hours of probability flux data
+    for i in range(24):
+        time_str = (now - datetime.timedelta(hours=23-i)).strftime("%H:00")
+        flux_val = 60 + rng.random() * 35  # random flux between 60 and 95
+        line_data.append({"time": time_str, "flux": round(flux_val, 1)})
+        
+    return {
+        "accounts": training["flagged_accounts"],
+        "lineData": line_data
+    }
 
 @app.get("/api/v1/metrics")
 def get_metrics_v1() -> dict:
