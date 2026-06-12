@@ -11,13 +11,11 @@ const nextConfig: NextConfig = {
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
     ignoreBuildErrors: true,
   },
-  webpack: (config) => {
-    // Disable Webpack cache to reduce memory usage during build
-    config.cache = false;
-    return config;
+  experimental: {
+    // Optimizes memory usage during build for constrained environments like Vercel
+    memoryBasedWorkersCount: true,
   },
 };
 

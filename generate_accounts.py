@@ -76,9 +76,6 @@ with open('DataSet.csv', 'r') as csvfile:
         }
         accounts.append(account)
         idx += 1
-        
-        if idx >= 1500:
-            break
 
 output_path = 'public/accounts.json'
 os.makedirs('public', exist_ok=True)
