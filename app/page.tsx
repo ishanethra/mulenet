@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
   const router = useRouter();
-  // Auto-start on load
-  const [isStarted, setIsStarted] = useState(true);
+  // Auto-start on load is blocked by browsers for audio; require a click
+  const [isStarted, setIsStarted] = useState(false);
   const [voicesLoaded, setVoicesLoaded] = useState(false);
   const [storyStep, setStoryStep] = useState(0);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
@@ -134,10 +134,19 @@ export default function LandingPage() {
           </h1>
 
           <div className="flex items-center gap-6 pt-4 z-50 relative">
-            <div className="px-8 py-4 bg-green-500/10 text-green-400 font-semibold rounded-lg border border-green-500/30 flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-              Briefing in Progress...
-            </div>
+            {isStarted ? (
+              <div className="px-8 py-4 bg-green-500/10 text-green-400 font-semibold rounded-lg border border-green-500/30 flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                Briefing in Progress...
+              </div>
+            ) : (
+              <button 
+                onClick={() => setIsStarted(true)}
+                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg border border-blue-400/50 flex items-center gap-3 transition cursor-pointer shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+              >
+                Start AI Briefing
+              </button>
+            )}
             
             <Link 
               href="/dashboard"
