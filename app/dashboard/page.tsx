@@ -184,7 +184,11 @@ export default function Home() {
 
 
   const openReport = (id: string) => {
-    window.open(`/dashboard?account=${id}`, '_blank');
+    const acct = dynamicAccounts.find((a) => a.id === id) || fallbackAccounts.find((a) => a.id === id);
+    if (acct) {
+      setSelectedAccount(acct);
+      setIsReportView(true);
+    }
   };
 
   const closeReport = () => {
