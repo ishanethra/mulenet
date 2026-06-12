@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ArrowLeft, Target, GitMerge, TrendingUp, AlertOctagon } from "lucide-react";
 import {
   LineChart,
@@ -14,33 +14,20 @@ import {
 } from "recharts";
 
 export default function MetricsPage() {
-  // Hardcoded highly realistic data reflecting a HistGradientBoosting + MLP ensemble
-  // optimized for extreme recall (Threshold = 0.15), yielding minimum false negatives.
-  
-  // PR Curve Data points (Reflecting a near-perfect model)
-  const prData = useMemo(() => {
-    const data = [];
-    for (let i = 0; i <= 100; i += 5) {
-      const recall = i / 100;
-      // Precision stays near 1.0 until the very end, showing almost perfect separation
-      let precision = 1.0;
-      if (recall > 0.95) precision = 0.998;
-      if (recall > 0.99) precision = 0.995;
-      data.push({ recall, precision });
-    }
-    return data;
+  const [metrics, setMetrics] = useState<any>({
+    prData: [],
+    confusionMatrix: { trueNegatives: 0, falsePositives: 0, falseNegatives: 0, truePositives: 0 },
+    accuracy: 0
+  });
+
+  useEffect(() => {
+    fetch('https://mulenet-backend.onrender.com/api/v1/metrics')
+      .then(res => res.json())
+      .then(data => setMetrics(data))
+      .catch(err => console.error("Failed to load metrics", err));
   }, []);
 
-  // Confusion Matrix for "Perfect Ensemble" (Threshold 0.65)
-  // Achieving both Maximum Recall and Maximum Precision through Deep Learning soft-voting
-  const confusionMatrix = {
-    trueNegatives: 9451180, // Safe accounts correctly ignored
-    falsePositives: 62,      // Safe accounts incorrectly flagged (virtually zero)
-    falseNegatives: 5,       // Fraud accounts ignored (virtually zero)
-    truePositives: 30857,    // Fraud accounts correctly caught
-  };
-
-  const total = Object.values(confusionMatrix).reduce((a, b) => a + b, 0);
+  const total = Object.values(metrics.confusionMatrix).reduce((a: any, b: any) => a + b, 0);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-gray-200 p-8 font-sans">
@@ -96,7 +83,7 @@ export default function MetricsPage() {
             
             <div className="flex-1 w-full min-h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={prData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
+                <LineChart data={metrics.prData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
                   <XAxis 
                     dataKey="recall" 
@@ -150,11 +137,11 @@ export default function MetricsPage() {
                   Actual Safe
                 </div>
                 <div className="col-span-1 bg-[#16201b] border border-[#1e3025] rounded-lg p-4 flex flex-col items-center justify-center transition hover:border-[#2a4535]">
-                  <span className="text-2xl font-semibold text-[#86e2a9]">{confusionMatrix.trueNegatives.toLocaleString()}</span>
+                  <span className="text-2xl font-semibold text-[#86e2a9]">{metrics.confusionMatrix.trueNegatives.toLocaleString()}</span>
                   <span className="text-xs text-[#528a67] mt-1">True Negative</span>
                 </div>
                 <div className="col-span-1 bg-[#2a1215] border border-[#4a1c1c] rounded-lg p-4 flex flex-col items-center justify-center transition hover:border-[#6a2525]">
-                  <span className="text-2xl font-semibold text-[#ff8a8a]">{confusionMatrix.falsePositives.toLocaleString()}</span>
+                  <span className="text-2xl font-semibold text-[#ff8a8a]">{metrics.confusionMatrix.falsePositives.toLocaleString()}</span>
                   <span className="text-xs text-[#9c5454] mt-1">False Positive</span>
                 </div>
 
@@ -163,11 +150,11 @@ export default function MetricsPage() {
                   Actual Fraud
                 </div>
                 <div className="col-span-1 bg-[#1a1c23] border border-[#252833] rounded-lg p-4 flex flex-col items-center justify-center transition hover:border-[#353a4a]">
-                  <span className="text-2xl font-semibold text-[#8ab4f8]">{confusionMatrix.falseNegatives.toLocaleString()}</span>
+                  <span className="text-2xl font-semibold text-[#8ab4f8]">{metrics.confusionMatrix.falseNegatives.toLocaleString()}</span>
                   <span className="text-xs text-[#556d96] mt-1">False Negative</span>
                 </div>
                 <div className="col-span-1 bg-[#261810] border border-[#402414] rounded-lg p-4 flex flex-col items-center justify-center transition hover:border-[#60351d]">
-                  <span className="text-2xl font-semibold text-[#ffb076]">{confusionMatrix.truePositives.toLocaleString()}</span>
+                  <span className="text-2xl font-semibold text-[#ffb076]">{metrics.confusionMatrix.truePositives.toLocaleString()}</span>
                   <span className="text-xs text-[#9b6b47] mt-1">True Positive</span>
                 </div>
               </div>

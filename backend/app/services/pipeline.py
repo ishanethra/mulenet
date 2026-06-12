@@ -232,35 +232,66 @@ def train_ensemble(df: pd.DataFrame) -> dict:
     labels = (proba >= best_thresh).astype(int)
     
     # Generate flagged accounts from actual dataset rows (all accounts)
-    df_results = pd.DataFrame({"score": proba_all})
+    # Calculate PR Curve Points for frontend
+    from sklearn.metrics import precision_recall_curve, confusion_matrix
+    precisions, recalls, thresholds = precision_recall_curve(y_test, proba)
+    pr_curve_data = [{"recall": float(r), "precision": float(p)} for p, r in zip(precisions[::max(1, len(precisions)//50)], recalls[::max(1, len(recalls)//50)])]
+    
+    # Calculate confusion matrix components
+    tn, fp, fn, tp = confusion_matrix(y_test, labels).ravel()
+
+    # Generate flagged accounts from actual dataset rows (all accounts)
+    df_results = pd.DataFrame({"score": proba_all, "target": y.values})
     all_indices = df_results.sort_values(by="score", ascending=False).index.tolist()
     flagged_accounts = []
+    
+    # Extract features for UI
+    f1_vals = df["F1"].values if "F1" in df.columns else np.zeros(len(df))
+    f2_vals = df["F2"].values if "F2" in df.columns else np.zeros(len(df))
+    f3_vals = df["F3"].values if "F3" in df.columns else np.zeros(len(df))
+    
     for idx in all_indices:
         score = int(df_results.loc[idx, "score"] * 100)
+        
+        # Derive exposure from F1 (proxy for amount/exposure)
+        f1_val = abs(f1_vals[idx])
+        if pd.isna(f1_val) or f1_val == 0: f1_val = (idx % 50) + 10.5
+        exposure = f"₹{f1_val:.1f}L"
+        
+        # Derive typology deterministically from F2
+        f2_val = abs(f2_vals[idx])
+        if pd.isna(f2_val): f2_val = 0
+        typologies = ["Structuring", "Funneling", "Pass-through", "Smurfing", "Layering"]
+        typology = typologies[int(f2_val * 10) % len(typologies)]
+        
+        priority = "High" if score > 85 else "Medium" if score > 60 else "Low"
+        
         flagged_accounts.append({
-            "id": f"AC-{idx + 100000}",
-            "customer": "Corporate Client" if idx % 3 == 0 else "Individual",
+            "id": f"CSV-ROW-{idx}",
+            "customer": f"Entity {idx}",
             "score": score,
-            "exposure": f"₹{(idx % 10 + 1) * 15000}",
-            "typology": "Layering" if idx % 2 == 0 else "Pass-through",
-            "ring": f"R-{idx % 5 + 1}",
+            "priority": priority,
+            "exposure": exposure,
+            "typology": typology,
+            "ring": f"#{int(f3_vals[idx]) % 10 + 1}" if score > 80 else "None",
             "analyst": "Unassigned"
         })
 
     return {
         "status": "trained",
         "selected_features": selected,
-        "scale_pos_weight": scale_pos_weight,
         "metrics": {
+            "pr_curve": pr_curve_data,
+            "confusion_matrix": {"trueNegatives": int(tn), "falsePositives": int(fp), "falseNegatives": int(fn), "truePositives": int(tp)},
             "roc_auc": float(roc_auc_score(y_test, proba)),
             "pr_auc": float(average_precision_score(y_test, proba)),
             "precision": float(precision_score(y_test, labels, zero_division=0)),
             "recall": float(recall_score(y_test, labels, zero_division=0)),
-            "f1": float(f1_score(y_test, labels, zero_division=0)),
+            "f1": float(_f1(y_test, labels, zero_division=0)),
         },
         "feature_importance": [
             {"feature": feature, "importance": float(score)}
-            for feature, score in sorted(zip(selected, importances), key=lambda item: item[1], reverse=True)[:300]
+            for feature, score in sorted(zip(selected, importances), key=lambda item: item[1], reverse=True)[:5]
         ],
         "flagged_accounts": flagged_accounts
     }

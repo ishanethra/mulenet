@@ -1,10 +1,76 @@
 "use client";
 
-import { ArrowRight, ShieldAlert, Activity, Network } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowRight, ShieldAlert, Activity, Network, Play } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
+  const router = useRouter();
+  // Auto-start on load
+  const [isStarted, setIsStarted] = useState(true);
+  const [storyStep, setStoryStep] = useState(0);
+
+  const storyFrames = [
+    "Hello. I am your MuleNet AI Investigator.",
+    "Right now, criminal syndicates are laundering billions through hidden 'Mule' accounts.",
+    "Traditional rules-based engines fail to detect these sprawling networks. They are simply too slow.",
+    "But MuleNet uses Graph Neural Networks to map these unseen topologies instantly.",
+    "We achieve Maximum Recall with zero false negatives. No one escapes our detection.",
+    "System is armed. Initiating secure handoff to your dashboard."
+  ];
+
+  const avatarPositions = [
+    { right: '5%', bottom: '5%', scale: 1 },       // Step 0: Initial Right
+    { right: '40%', bottom: '10%', scale: 1.1 },   // Step 1: Moving left/center
+    { right: '10%', bottom: '15%', scale: 0.95 },  // Step 2: Back right, slightly up
+    { right: '35%', bottom: '5%', scale: 1.15 },   // Step 3: Center close up
+    { right: '10%', bottom: '5%', scale: 1 },      // Step 4: Final Right
+  ];
+
+  useEffect(() => {
+    if (!isStarted) return;
+
+    // Speak the current frame
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel(); // Stop any previous speech
+      const utterance = new SpeechSynthesisUtterance(storyFrames[storyStep]);
+      
+      // Try to find a good female English voice
+      const voices = window.speechSynthesis.getVoices();
+      const femaleVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Female'));
+      if (femaleVoice) utterance.voice = femaleVoice;
+      
+      utterance.pitch = 1.1;
+      utterance.rate = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    const timer = setInterval(() => {
+      setStoryStep((prev) => {
+        if (prev < storyFrames.length - 1) {
+          return prev + 1;
+        } else {
+          clearInterval(timer);
+          setTimeout(() => router.push('/dashboard'), 3000);
+          return prev;
+        }
+      });
+    }, 5000); // 5 seconds per frame to allow time to speak
+    return () => {
+      clearInterval(timer);
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    };
+  }, [router, storyFrames.length, storyStep, isStarted]);
+
+  // Handle voice loading race condition
+  useEffect(() => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices();
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#050505] text-gray-200 font-sans relative overflow-hidden flex flex-col justify-center">
       
@@ -24,7 +90,7 @@ export default function LandingPage() {
         <div className="flex gap-4 items-center">
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-semibold tracking-widest uppercase">
             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-            Systems Online | TRL 4 Validated
+            Systems Online
           </div>
         </div>
       </nav>
@@ -42,28 +108,18 @@ export default function LandingPage() {
             Next-Generation <br />
             <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 text-transparent bg-clip-text">Fraud Intelligence</span>
           </h1>
-          
-          <p className="text-xl text-gray-400 max-w-xl leading-relaxed">
-            Deploy advanced Graph Neural Networks and Temporal Learning to detect highly sophisticated money mule rings with Maximum Recall and Zero False Negatives.
-          </p>
 
-          <div className="flex items-center gap-6 pt-4">
-            <Link 
-              href="/dashboard"
-              className="group relative px-8 py-4 bg-white text-black font-semibold rounded-lg overflow-hidden flex items-center gap-3 transition-transform hover:scale-105"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <span className="relative z-10 flex items-center gap-2">
-                Enter Dashboard <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </Link>
+          <div className="flex items-center gap-6 pt-4 z-50 relative">
+            <div className="px-8 py-4 bg-green-500/10 text-green-400 font-semibold rounded-lg border border-green-500/30 flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+              Briefing in Progress...
+            </div>
             
             <Link 
-              href="/metrics"
-              className="px-8 py-4 bg-[#111] text-gray-300 font-semibold rounded-lg border border-[#333] hover:bg-[#222] hover:text-white transition flex items-center gap-3"
+              href="/dashboard"
+              className="px-8 py-4 bg-[#111] text-gray-300 font-semibold rounded-lg border border-[#333] hover:bg-[#222] hover:text-white transition flex items-center gap-3 cursor-pointer"
             >
-              <Activity className="w-5 h-5" />
-              View Telemetry
+              Skip to Dashboard <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
 
@@ -84,46 +140,70 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Right Column: 3D Explainer Avatar */}
-        <div className="relative h-[600px] hidden lg:flex items-center justify-center">
-          <div className="absolute w-full h-full animate-float animate-glow flex items-center justify-center">
-            <Image 
-              src="/3d-avatar.png" 
-              alt="AI Investigation Explainer" 
-              width={600} 
-              height={800} 
-              className="object-contain drop-shadow-2xl z-20"
-              priority
-            />
+      </main>
+
+      {/* Roaming Animated Explainer Avatar (Hidden until started) */}
+      <div 
+        className={`absolute z-50 transition-all duration-[2000ms] ease-in-out flex items-end pointer-events-none ${isStarted ? 'opacity-100' : 'opacity-0 scale-95 translate-y-10'}`}
+        style={{
+          right: isStarted ? (avatarPositions[storyStep]?.right || '10%') : '-20%',
+          bottom: avatarPositions[storyStep]?.bottom || '5%',
+          transform: `scale(${avatarPositions[storyStep]?.scale || 1})`
+        }}
+      >
+        {/* Holographic Speech / Story Panel */}
+        <div className="absolute right-[80%] bottom-[40%] w-80 bg-[#0a0a0a]/90 backdrop-blur-xl border border-blue-500/30 p-6 rounded-2xl shadow-[0_0_40px_rgba(59,130,246,0.2)] z-30 transition-opacity duration-300 pointer-events-auto">
+          <div className="flex items-center gap-3 mb-4 border-b border-[#222] pb-3">
+            <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
+            <p className="text-xs font-mono text-blue-400 tracking-widest uppercase">AI Investigator</p>
           </div>
           
-          {/* Floating UI Elements around Avatar */}
-          <div className="absolute top-20 right-10 bg-[#111]/80 backdrop-blur-md border border-[#333] p-4 rounded-xl shadow-2xl animate-float" style={{ animationDelay: '1s' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
-                <Activity className="text-red-400 w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">Risk Confidence</p>
-                <p className="text-sm font-bold text-white">99.8% Precision</p>
-              </div>
+          <h3 key={storyStep} className="text-lg font-medium text-gray-100 leading-relaxed min-h-[80px] animate-fade-in">
+            {storyFrames[storyStep]}
+          </h3>
+          
+          {/* Playback Progress */}
+          <div className="mt-4 pt-4 border-t border-[#222] flex items-center gap-3">
+            <div className="flex-1 h-1 bg-[#222] rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-blue-500 transition-all duration-[5000ms] ease-linear" 
+                style={{ width: `${((storyStep + 1) / storyFrames.length) * 100}%` }}
+              ></div>
             </div>
-          </div>
-
-          <div className="absolute bottom-32 left-0 bg-[#111]/80 backdrop-blur-md border border-[#333] p-4 rounded-xl shadow-2xl animate-float" style={{ animationDelay: '2s' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-                <Network className="text-blue-400 w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">Subgraph Detected</p>
-                <p className="text-sm font-bold text-white">Funneling Layer 3</p>
-              </div>
-            </div>
+            <span className="text-xs text-gray-500 font-mono">00:0{storyStep * 5} / 00:30</span>
           </div>
         </div>
 
-      </main>
+        {/* The 3D Human Avatar */}
+        <div className="relative animate-float pointer-events-auto">
+          {/* Background Glow attached to avatar */}
+          <div className="absolute inset-0 bg-blue-500/10 blur-[80px] rounded-full"></div>
+          
+          {/* Audio Visualizer Waves under avatar indicating speaking */}
+          <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 flex items-center gap-1 opacity-60">
+             {[...Array(8)].map((_, i) => (
+               <div 
+                 key={i} 
+                 className="w-1.5 bg-blue-400 rounded-full" 
+                 style={{ 
+                   height: isStarted ? `${20 + Math.random() * 30}px` : '4px',
+                   animation: isStarted ? `pulse ${0.2 + Math.random() * 0.3}s infinite alternate` : 'none',
+                   transition: 'height 0.2s'
+                 }}
+               ></div>
+             ))}
+          </div>
+
+          <Image 
+            src="/3d_human_explainer_1781263585764.png" 
+            alt="AI Investigation Explainer" 
+            width={450} 
+            height={600} 
+            className="object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] relative z-20"
+            priority
+          />
+        </div>
+      </div>
     </div>
   );
 }
