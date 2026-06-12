@@ -10,6 +10,7 @@ export default function LandingPage() {
   const router = useRouter();
   // Auto-start on load
   const [isStarted, setIsStarted] = useState(true);
+  const [voicesLoaded, setVoicesLoaded] = useState(false);
   const [storyStep, setStoryStep] = useState(0);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
 
@@ -31,8 +32,20 @@ export default function LandingPage() {
     { right: '5%', bottom: '5%', scale: 1 }        // Step 5
   ];
 
+  // Wait for voices to load to prevent male-voice fallback on first tick
   useEffect(() => {
-    if (!isStarted) return;
+    const loadVoices = () => {
+      const v = window.speechSynthesis.getVoices();
+      if (v.length > 0) setVoicesLoaded(true);
+    };
+    loadVoices();
+    if (window.speechSynthesis !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isStarted || !voicesLoaded) return;
 
     // Speak the current frame
     if ('speechSynthesis' in window) {
@@ -45,8 +58,17 @@ export default function LandingPage() {
       if (selectedVoiceURI) {
         chosenVoice = voices.find(v => v.voiceURI === selectedVoiceURI);
       } else {
-        chosenVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Female')) || voices[0];
-        if (chosenVoice) setSelectedVoiceURI(chosenVoice.voiceURI);
+        chosenVoice = voices.find(v => {
+          const n = v.name.toLowerCase();
+          return n.includes('samantha') || n.includes('zira') || n.includes('victoria') || n.includes('female') || n.includes('google us english');
+        });
+        
+        // Lock it only if we actually found a female voice, otherwise we might lock a temporary male fallback
+        if (chosenVoice) {
+          setSelectedVoiceURI(chosenVoice.voiceURI);
+        } else {
+          chosenVoice = voices[0]; // fallback
+        }
       }
 
       if (chosenVoice) utterance.voice = chosenVoice;
@@ -71,14 +93,7 @@ export default function LandingPage() {
       clearInterval(timer);
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     };
-  }, [router, storyFrames.length, storyStep, isStarted]);
-
-  // Handle voice loading race condition
-  useEffect(() => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.getVoices();
-    }
-  }, []);
+  }, [router, storyFrames.length, storyStep, isStarted, voicesLoaded, selectedVoiceURI]);
 
   return (
     <div className="min-h-screen bg-[#050505] text-gray-200 font-sans relative overflow-hidden flex flex-col justify-center">
@@ -185,7 +200,7 @@ export default function LandingPage() {
             alt="AI Investigation Explainer" 
             width={450} 
             height={600} 
-            className="object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] relative z-20"
+            className="object-contain mix-blend-screen drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] relative z-20"
             priority
           />
         </div>
