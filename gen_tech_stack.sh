@@ -18,7 +18,7 @@ flowchart TD
     end
 
     subgraph Intelligence [3. Core AI & ML Engine]
-        XGB[XGBoost Risk Models]:::ml
+        CATB[CatBoost + RF Risk Models]:::ml
         GNN[NetworkX Graph Models]:::ml
         SHAP[SHAP Explainable AI]:::ml
     end

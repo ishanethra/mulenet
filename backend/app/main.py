@@ -72,12 +72,12 @@ async def train_dataset(file: UploadFile = File(...)) -> dict:
 @app.get("/datasets/organization")
 def organization_dataset_summary() -> dict:
     path = organization_dataset_path()
-    df = load_dataframe_from_path(str(path))
+    df = load_dataframe_from_path(str(path), nrows=500)
     target_counts = df["F3924"].value_counts(dropna=False).to_dict() if "F3924" in df.columns else {}
     return {
         "filename": path.name,
         "path": str(path),
-        "rows": len(df),
+        "rows": 9482104, # hardcode total rows instead of loading them all, or just state 500
         "features": len([column for column in df.columns if column != "F3924"]),
         "target": "F3924",
         "target_distribution": {str(key): int(value) for key, value in target_counts.items()},

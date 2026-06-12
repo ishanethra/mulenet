@@ -14,7 +14,8 @@ subtitle.text = ("Team: [Your Team Name]\n"
                  "Members: [Name 1], [Name 2], [Name 3]\n"
                  "Problem Statement: AI/ML-Based Classification of Suspicious Mule Accounts\n"
                  "PS Number: [Insert PS Number]\n"
-                 "Competition: Smart India Hackathon\n\n"
+                 "Competition: Smart India Hackathon\n"
+                 "Current Status: Technology Readiness Level (TRL) 4\n\n"
                  "Tagline: Mapping the invisible networks of financial crime.")
 
 def add_bullet_slide(prs, title_text, bullets):
@@ -47,7 +48,7 @@ add_bullet_slide(prs, "Problem Understanding", [
 
 # Slide 3: Proposed Solution / Overview
 slide3 = add_bullet_slide(prs, "Our Solution: The MuleNet Platform", [
-    "Product Name: MuleNet",
+    "Product Name: MuleNet (Status: TRL 4 - Laboratory Prototype Validated)",
     "What it does: An AI/ML classification system that ingests bank data and government alerts to accurately distinguish suspicious accounts from legitimate ones.",
     "Why it is new: It uses machine learning for anomaly detection, predictive risk scoring, and intelligent alert generation (Explainable AI).",
     "[LIVE DEMO LINK]: [Insert your URL here]"
@@ -71,14 +72,14 @@ add_bullet_slide(prs, "Key Features In Our Product", [
 slide5 = add_bullet_slide(prs, "Technical Approach & Methodology", [
     "Frontend: React / Next.js",
     "Backend API: Python FastAPI",
-    "AI & Classification: XGBoost and LightGBM Stacking Ensemble + SHAP",
+    "AI & Classification: HistGradientBoosting + Random Forest Ensemble + SHAP (F1-Optimised)",
     "Graph Intel: Custom Network Analysis (Dynamic Network Analysis)",
     "Database / Pipelines: Pandas for feature engineering",
     "",
     "Step-by-Step Flow:",
     "1. Ingest Dataset & TMS Feeds",
     "2. Extract 18 Features (F115-F3894)",
-    "3. XGBoost and LightGBM Ensemble predicts target variable (F3924)",
+    "3. HistGradientBoosting + Random Forest Ensemble predicts target variable (F3924)",
     "4. Network Analysis validates network connections",
     "5. Output Alert to UI Dashboard"
 ])
@@ -104,6 +105,7 @@ add_bullet_slide(prs, "Slide 6: Expected Outcomes & Impact", [
 
 # Slide 7: Feasibility & Scalability
 add_bullet_slide(prs, "Feasibility & Scalability", [
+    "Current Readiness: TRL 4 (Component validation in laboratory environment)",
     "Why we can build it easily:",
     "  - We built the AI specifically to target the required dataset features (F3924 target, F115-F3894 features).",
     "  - We process data in small pieces. This means our software runs fast without crashing.",
@@ -140,7 +142,7 @@ table.cell(1, 1).text = "Temporal feature extraction to track transaction veloci
 
 # Row 2
 table.cell(2, 0).text = "[2] J. Doe, et al., \"Financial Fraud Detection Using Explainable AI and Stacking Ensemble Methods,\" arXiv:2505.10050, 2025."
-table.cell(2, 1).text = "Used to build our XGBoost and LightGBM + SHAP Copilot models."
+table.cell(2, 1).text = "Used to build our HistGradientBoosting + Random Forest ensemble with F1-optimal threshold search."
 
 # Row 3
 table.cell(3, 0).text = "[3] R. Smith, \"Advances in Dynamic Network Analysis for Anti-Money Laundering,\" arXiv:2503.24259, 2025."
@@ -151,7 +153,7 @@ table.cell(4, 0).text = "Dataset: Provided Official Hackathon Dataset"
 table.cell(4, 1).text = "Target Variable: F3924\nKey Features Engineered: F115, F321, F527, F531, F670, F1692, F2082, F2122, F2582, F2678, F2737, F2956, F3043, F3836, F3887, F3889, F3891, F3894"
 
 # Row 5
-table.cell(5, 0).text = "Tools: Python 3, FastAPI, React, Next.js, NetworkX, Pandas, XGBoost and LightGBM."
+table.cell(5, 0).text = "Tools: Python 3, FastAPI, React, Next.js, NetworkX, Pandas, scikit-learn (HistGradientBoosting, RandomForest, SHAP)."
 table.cell(5, 1).text = "Core technology stack and data model simulation."
 
 for row in table.rows:
