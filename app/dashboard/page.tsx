@@ -570,7 +570,14 @@ export default function Home() {
                             </div>
                           )}
                           <button 
-                            onClick={() => setNodeActionMessage(`Ledger exported. Preparing historical view for ${selectedNetworkNode.name}...`)}
+                            onClick={() => {
+                              if (selectedNetworkNode.name.startsWith('AC-')) {
+                                setIsNetworkModalOpen(false);
+                                openReport(selectedNetworkNode.name);
+                              } else {
+                                setNodeActionMessage(`Ledger exported. Preparing historical view for ${selectedNetworkNode.name}...`);
+                              }
+                            }}
                             className="w-full py-2 bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 text-sm font-medium transition-colors mb-3"
                           >
                             View Full History
