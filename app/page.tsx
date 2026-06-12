@@ -215,15 +215,24 @@ export default function Home() {
             <ShieldAlert className="text-gray-400 w-7 h-7" />
             <h1 className="text-xl font-medium text-gray-200 tracking-tight">MuleNet Intelligence Hub <span className="text-gray-500 font-normal ml-2">| Bank of India</span></h1>
           </div>
-          <div className="flex items-center bg-[#111] rounded-lg border border-[#222] px-4 py-2 w-64">
-            <Search className="w-4 h-4 text-gray-500 mr-2" />
-            <input 
-              type="text" 
-              placeholder="Search accounts..." 
-              className="bg-transparent border-none outline-none text-sm w-full text-gray-300"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+          <div className="flex items-center gap-4">
+            <div className="flex items-center bg-[#111] rounded-lg border border-[#222] px-4 py-2 w-64">
+              <Search className="w-4 h-4 text-gray-500 mr-2" />
+              <input 
+                type="text" 
+                placeholder="Search accounts..." 
+                className="bg-transparent border-none outline-none text-sm w-full text-gray-300"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+            <button 
+              onClick={() => window.location.href = '/metrics'}
+              className="px-4 py-2 bg-[#111] text-gray-300 border border-[#222] rounded-lg hover:bg-[#1a1a1a] transition font-medium text-sm flex items-center gap-2"
+            >
+              <Activity className="w-4 h-4 text-gray-500" />
+              Telemetry
+            </button>
           </div>
         </div>
 
