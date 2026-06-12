@@ -73,8 +73,8 @@ export default function LandingPage() {
 
       if (chosenVoice) utterance.voice = chosenVoice;
       
-      utterance.pitch = 1.1;
-      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.rate = 0.85; // Speak slower and more clearly
       window.speechSynthesis.speak(utterance);
     }
 
@@ -88,7 +88,7 @@ export default function LandingPage() {
           return prev;
         }
       });
-    }, 5000); // 5 seconds per frame to allow time to speak
+    }, 8000); // Increased from 5s to 8s to allow time for slower speech
     return () => {
       clearInterval(timer);
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
@@ -168,7 +168,7 @@ export default function LandingPage() {
 
       {/* Roaming Animated Explainer Avatar */}
       <div 
-        className={`fixed z-50 transition-all duration-[2000ms] ease-in-out flex items-end pointer-events-none ${isStarted ? 'opacity-100' : 'opacity-0 scale-95 translate-y-10'}`}
+        className={`fixed z-50 transition-all duration-[3000ms] ease-in-out flex items-end pointer-events-none ${isStarted ? 'opacity-100' : 'opacity-0 scale-95 translate-y-10'}`}
         style={{
           right: isStarted ? (avatarPositions[storyStep]?.right || '5%') : '-20%',
           bottom: avatarPositions[storyStep]?.bottom || '2%',
