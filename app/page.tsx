@@ -200,7 +200,7 @@ export default function LandingPage() {
             alt="AI Investigation Explainer" 
             width={450} 
             height={600} 
-            className="object-contain mix-blend-screen drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] relative z-20"
+            className="object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] relative z-20"
             priority
           />
         </div>
