@@ -15,21 +15,21 @@ export default function LandingPage() {
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
 
   const storyFrames = [
-    "Hello. I am your MuleNet AI Investigator.",
-    "Right now, criminal syndicates are laundering billions through hidden 'Mule' accounts.",
-    "Traditional rules-based engines fail to detect these sprawling networks. They are simply too slow.",
-    "But MuleNet uses Graph Neural Networks to map these unseen topologies instantly.",
-    "We achieve Maximum Recall with zero false negatives. No one escapes our detection.",
-    "System is armed. Initiating secure handoff to your dashboard."
+    "Hello! I am your MuleNet AI Investigator.",
+    "Banks are facing a massive surge in financial fraud, with criminals using hidden 'mule' accounts to conceal stolen funds.",
+    "Traditional rule-based systems simply cannot keep up with these evolving, complex fraud patterns.",
+    "That is why we built MuleNet. Our AI analyzes thousands of transactional features to detect suspicious behavior instantly.",
+    "By learning from hidden data patterns, we generate predictive risk scores to stop fraudulent fund movements before they happen.",
+    "Our classification model distinguishes criminals from legitimate users with maximum accuracy. Let's look at the dashboard."
   ];
 
   const avatarPositions = [
-    { right: '5%', bottom: '5%', scale: 1 },       // Step 0: Initial Right
-    { right: '15%', bottom: '5%', scale: 1.05 },   // Step 1: Moving slightly left
-    { right: '5%', bottom: '8%', scale: 0.95 },    // Step 2: Back right, slightly up
-    { right: '10%', bottom: '5%', scale: 1.1 },    // Step 3: Step forward
-    { right: '5%', bottom: '5%', scale: 1 },       // Step 4: Final Right
-    { right: '5%', bottom: '5%', scale: 1 }        // Step 5
+    { right: '5%', bottom: '2%', scale: 1 },       // Step 0: Initial Right
+    { right: '15%', bottom: '2%', scale: 1.05 },   // Step 1: Moving slightly left
+    { right: '5%', bottom: '5%', scale: 0.95 },    // Step 2: Back right, slightly up
+    { right: '10%', bottom: '2%', scale: 1.1 },    // Step 3: Step forward
+    { right: '20%', bottom: '5%', scale: 1.05 },   // Step 4: Left center
+    { right: '5%', bottom: '2%', scale: 1 }        // Step 5: Final Right
   ];
 
   // Wait for voices to load to prevent male-voice fallback on first tick
@@ -166,28 +166,28 @@ export default function LandingPage() {
 
       </main>
 
-      {/* Roaming Animated Explainer Avatar (Hidden until started) */}
+      {/* Roaming Animated Explainer Avatar */}
       <div 
-        className={`absolute z-50 transition-all duration-[2000ms] ease-in-out flex items-end pointer-events-none ${isStarted ? 'opacity-100' : 'opacity-0 scale-95 translate-y-10'}`}
+        className={`fixed z-50 transition-all duration-[2000ms] ease-in-out flex items-end pointer-events-none ${isStarted ? 'opacity-100' : 'opacity-0 scale-95 translate-y-10'}`}
         style={{
-          right: isStarted ? (avatarPositions[storyStep]?.right || '10%') : '-20%',
-          bottom: avatarPositions[storyStep]?.bottom || '5%',
+          right: isStarted ? (avatarPositions[storyStep]?.right || '5%') : '-20%',
+          bottom: avatarPositions[storyStep]?.bottom || '2%',
           transform: `scale(${avatarPositions[storyStep]?.scale || 1})`
         }}
       >
         {/* The 3D Human Avatar */}
         <div className="relative animate-float pointer-events-auto">
           {/* Background Glow attached to avatar */}
-          <div className="absolute inset-0 bg-blue-500/10 blur-[80px] rounded-full"></div>
+          <div className="absolute inset-0 bg-blue-500/10 blur-[60px] rounded-full md:blur-[80px]"></div>
           
           {/* Audio Visualizer Waves under avatar indicating speaking */}
-          <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 flex items-center gap-1 opacity-60">
-             {[...Array(8)].map((_, i) => (
+          <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-1 opacity-60">
+             {[...Array(6)].map((_, i) => (
                <div 
                  key={i} 
-                 className="w-1.5 bg-blue-400 rounded-full" 
+                 className="w-1 md:w-1.5 bg-blue-400 rounded-full" 
                  style={{ 
-                   height: isStarted ? `${20 + Math.random() * 30}px` : '4px',
+                   height: isStarted ? `${15 + Math.random() * 25}px` : '4px',
                    animation: isStarted ? `pulse ${0.2 + Math.random() * 0.3}s infinite alternate` : 'none',
                    transition: 'height 0.2s'
                  }}
@@ -200,7 +200,7 @@ export default function LandingPage() {
             alt="AI Investigation Explainer" 
             width={450} 
             height={600} 
-            className="object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] relative z-20"
+            className="w-[200px] sm:w-[280px] md:w-[350px] lg:w-[450px] object-contain drop-shadow-[0_0_20px_rgba(59,130,246,0.3)] md:drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] relative z-20"
             priority
           />
         </div>
