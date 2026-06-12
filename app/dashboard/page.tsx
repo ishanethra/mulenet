@@ -9,7 +9,9 @@ import {
   ExternalLink,
   Lock,
   Search,
-  MessageSquare
+  MessageSquare,
+  Target,
+  Network
 } from "lucide-react";
 import {
   LineChart,
@@ -21,7 +23,10 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  ScatterChart,
+  Scatter,
+  ZAxis
 } from "recharts";
 import { accounts as fallbackAccounts } from "@/lib/data";
 
@@ -41,6 +46,16 @@ export default function Home() {
   const [isFrozen, setIsFrozen] = useState(false);
   const [isDispatching, setIsDispatching] = useState(false);
   const [isRfiSent, setIsRfiSent] = useState(false);
+
+  // Sync button states with localStorage to persist across refreshes
+  useEffect(() => {
+    if (selectedAccount) {
+      const frozenState = localStorage.getItem(`frozen_${selectedAccount.id}`);
+      const rfiState = localStorage.getItem(`rfi_${selectedAccount.id}`);
+      setIsFrozen(frozenState === 'true');
+      setIsRfiSent(rfiState === 'true');
+    }
+  }, [selectedAccount]);
 
   useEffect(() => {
     // Check if we are in the report view (new tab)
@@ -125,8 +140,6 @@ export default function Home() {
   }, []);
 
   const openReport = (id: string) => {
-    setIsFrozen(false);
-    setIsRfiSent(false);
     window.open(`/dashboard?account=${id}`, '_blank');
   };
 
@@ -136,18 +149,22 @@ export default function Home() {
   };
 
   const handleFreeze = () => {
+    if (!selectedAccount) return;
     setIsFreezing(true);
     setTimeout(() => {
-      setIsFreezing(false);
       setIsFrozen(true);
-    }, 1200);
+      setIsFreezing(false);
+      localStorage.setItem(`frozen_${selectedAccount.id}`, 'true');
+    }, 1500);
   };
 
   const handleDispatch = () => {
+    if (!selectedAccount) return;
     setIsDispatching(true);
     setTimeout(() => {
-      setIsDispatching(false);
       setIsRfiSent(true);
+      setIsDispatching(false);
+      localStorage.setItem(`rfi_${selectedAccount.id}`, 'true');
     }, 1500);
   };
 
@@ -157,68 +174,93 @@ export default function Home() {
 
   if (isReportView && selectedAccount) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-gray-200 p-8 font-sans">
-        <div className="max-w-6xl mx-auto space-y-6">
-          <div className="flex items-center justify-between bg-[#111] p-6 rounded-xl border border-[#222]">
-            <div>
-              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                <ShieldAlert className="text-red-500 w-8 h-8" />
-                {selectedAccount.id} - {selectedAccount.customer}
-              </h1>
-              <p className="text-gray-400 mt-1">Risk Score: {selectedAccount.score}/100 | Typology: {selectedAccount.typology}</p>
-            </div>
-            <div className="flex gap-4">
-              <button 
-                onClick={handleFreeze}
-                disabled={isFrozen || isFreezing}
-                className={`px-6 py-2 border rounded transition font-medium flex items-center gap-2 ${
-                  isFrozen 
-                    ? 'bg-green-600/20 text-green-500 border-green-500/50 cursor-not-allowed' 
-                    : 'bg-red-600/20 text-red-500 border-red-500/50 hover:bg-red-600/30'
-                }`}
-              >
-                <Lock className="w-4 h-4" /> 
-                {isFreezing ? 'Processing...' : isFrozen ? 'Account Frozen' : 'Freeze Account'}
-              </button>
-              
-              <button 
-                onClick={handleDispatch}
-                disabled={isRfiSent || isDispatching}
-                className={`px-6 py-2 border rounded transition font-medium flex items-center gap-2 ${
-                  isRfiSent 
-                    ? 'bg-green-600/20 text-green-500 border-green-500/50 cursor-not-allowed' 
-                    : 'bg-blue-600/20 text-blue-400 border-blue-500/50 hover:bg-blue-600/30'
-                }`}
-              >
-                <MessageSquare className="w-4 h-4" /> 
-                {isDispatching ? 'Transmitting...' : isRfiSent ? 'RFI Dispatched' : 'Dispatch RFI'}
-              </button>
-              
-              <button onClick={closeReport} className="px-6 py-2 bg-[#222] text-gray-300 border border-[#333] rounded hover:bg-[#333] transition font-medium">
-                Back to Dashboard
-              </button>
-            </div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-[#0a0a0a] border border-[#222] rounded-2xl shadow-2xl p-8 flex flex-col z-50 overflow-y-auto">
+        <div className="flex justify-between items-center border-b border-[#222] pb-6 mb-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-white flex items-center gap-3">
+              <Target className="text-gray-400 w-6 h-6" />
+              Intelligence Dossier: {selectedAccount.id}
+            </h1>
+            <p className="text-gray-400 mt-1">Risk Score: {selectedAccount.score}/100 | Typology: {selectedAccount.typology}</p>
           </div>
+          <div className="flex gap-4">
+            <button 
+              onClick={handleFreeze}
+              disabled={isFrozen || isFreezing}
+              className={`px-6 py-2 border rounded transition font-medium flex items-center gap-2 ${
+                isFrozen 
+                  ? 'bg-green-600/20 text-green-500 border-green-500/50 cursor-not-allowed' 
+                  : 'bg-red-600/20 text-red-500 border-red-500/50 hover:bg-red-600/30'
+              }`}
+            >
+              <Lock className="w-4 h-4" /> 
+              {isFreezing ? 'Processing...' : isFrozen ? 'Account Frozen' : 'Freeze Account'}
+            </button>
+            
+            <button 
+              onClick={handleDispatch}
+              disabled={isRfiSent || isDispatching}
+              className={`px-6 py-2 border rounded transition font-medium flex items-center gap-2 ${
+                isRfiSent 
+                  ? 'bg-green-600/20 text-green-500 border-green-500/50 cursor-not-allowed' 
+                  : 'bg-blue-600/20 text-blue-400 border-blue-500/50 hover:bg-blue-600/30'
+              }`}
+            >
+              <MessageSquare className="w-4 h-4" /> 
+              {isDispatching ? 'Transmitting...' : isRfiSent ? 'RFI Dispatched' : 'Dispatch RFI'}
+            </button>
+            
+            <button onClick={closeReport} className="px-6 py-2 bg-[#222] text-gray-300 border border-[#333] rounded hover:bg-[#333] transition font-medium">
+              Back to Dashboard
+            </button>
+          </div>
+        </div>
 
-          {/* Telemetry & Device Intelligence */}
-          <div className="mt-8 bg-[#111] p-6 rounded-xl border border-[#222]">
+        {/* Telemetry & Device Intelligence */}
+        <div className="space-y-6">
+          <div className="bg-[#111] p-6 rounded-xl border border-[#222]">
             <h2 className="text-sm font-semibold mb-4 text-gray-300 border-b border-[#222] pb-3 uppercase tracking-wider">Device & Entity Telemetry</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
               <div>
                 <p className="text-gray-500 mb-1">Primary IP Address</p>
-                <p className="text-red-400 font-mono">194.26.x.x (VPN Detected)</p>
+                <p className="text-red-400 font-mono">194.26.x.x (VPN)</p>
               </div>
               <div>
-                <p className="text-gray-500 mb-1">Geolocation Mismatch</p>
-                <p className="text-gray-300">Registered: Mumbai | Login: Cyprus</p>
+                <p className="text-gray-500 mb-1">Geo Mismatch</p>
+                <p className="text-gray-300">Mumbai vs Cyprus</p>
               </div>
               <div>
-                <p className="text-gray-500 mb-1">Device Fingerprint</p>
-                <p className="text-gray-300">Shared with 4 other flagged entities</p>
+                <p className="text-gray-500 mb-1">Device Hash</p>
+                <p className="text-gray-300">Linked to 4 entities</p>
               </div>
               <div>
                 <p className="text-gray-500 mb-1">KYC Status</p>
-                <p className="text-amber-500">Synthetic Identity Suspected</p>
+                  <p className="text-amber-500">Synthetic Suspect</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Network Intel Graph */}
+            <div className="bg-[#111] p-6 rounded-xl border border-[#222]">
+              <h2 className="text-sm font-semibold mb-4 text-gray-300 border-b border-[#222] pb-3 uppercase tracking-wider flex items-center gap-2">
+                <Network className="w-4 h-4" /> Network Intel Graph
+              </h2>
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ScatterChart>
+                    <XAxis type="number" dataKey="x" hide />
+                    <YAxis type="number" dataKey="y" hide />
+                    <ZAxis type="number" range={[100, 800]} />
+                    <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                    <Scatter name="Connected Accounts" data={[
+                      { x: 10, y: 20, z: 200, name: 'Suspect Origin' },
+                      { x: 15, y: 35, z: 600, name: selectedAccount.id },
+                      { x: 25, y: 45, z: 200, name: 'Pass-through A' },
+                      { x: 20, y: 15, z: 200, name: 'Pass-through B' },
+                      { x: 35, y: 30, z: 800, name: 'Offshore Destination' },
+                    ]} fill="#ef4444" line={{ stroke: "#333", strokeWidth: 2 }} />
+                  </ScatterChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </div>
@@ -301,7 +343,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
     );
   }
 

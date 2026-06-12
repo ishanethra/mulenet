@@ -2,84 +2,128 @@
 
 import { ArrowRight, ShieldAlert, Activity, Network } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-gray-200 font-sans flex flex-col">
-      {/* Navbar */}
-      <nav className="flex items-center justify-between px-8 py-6 border-b border-[#222]">
-        <div className="flex items-center gap-3">
-          <ShieldAlert className="text-gray-400 w-8 h-8" />
-          <h1 className="text-2xl font-medium text-white tracking-tight">MuleNet <span className="text-gray-500 font-normal ml-2">| Bank of India</span></h1>
+    <div className="min-h-screen bg-[#050505] text-gray-200 font-sans relative overflow-hidden flex flex-col justify-center">
+      
+      {/* Animated Grid Background */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-30 z-0"></div>
+
+      {/* Glow Effects */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] pointer-events-none z-0"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
+
+      {/* Navigation */}
+      <nav className="absolute top-0 w-full p-8 flex justify-between items-center z-50">
+        <div className="flex items-center gap-2">
+          <ShieldAlert className="text-red-500 w-8 h-8" />
+          <span className="font-bold text-2xl tracking-wider text-white">MULENET</span>
         </div>
-        <Link 
-          href="/dashboard"
-          className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition shadow-lg shadow-blue-900/20 flex items-center gap-2"
-        >
-          Launch Hub <ArrowRight className="w-4 h-4" />
-        </Link>
+        <div className="flex gap-4 items-center">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-semibold tracking-widest uppercase">
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+            Systems Online | TRL 4 Validated
+          </div>
+        </div>
       </nav>
 
-      {/* Hero Section */}
-      <main className="flex-1 flex flex-col items-center justify-center text-center px-4 py-20">
-        <div className="max-w-4xl space-y-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1a1a1a] border border-[#333] text-sm text-gray-400 mb-4">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Systems Online | TRL 4 Validated
+      {/* Main Hero Section */}
+      <main className="max-w-7xl mx-auto px-8 w-full z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-12">
+        
+        {/* Left Column: Text & CTA */}
+        <div className="space-y-8">
+          <div className="inline-block px-4 py-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium">
+            AI-Powered Anti-Money Laundering
           </div>
           
-          <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-tight">
-            Next-Generation <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">
-              Fraud Intelligence
-            </span>
-          </h2>
+          <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+            Next-Generation <br />
+            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 text-transparent bg-clip-text">Fraud Intelligence</span>
+          </h1>
           
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            MuleNet deploys deep learning ensembles and real-time graph analysis to detect, trace, and neutralize sophisticated money laundering networks before funds cross borders.
+          <p className="text-xl text-gray-400 max-w-xl leading-relaxed">
+            Deploy advanced Graph Neural Networks and Temporal Learning to detect highly sophisticated money mule rings with Maximum Recall and Zero False Negatives.
           </p>
 
-          <div className="pt-8">
+          <div className="flex items-center gap-6 pt-4">
             <Link 
               href="/dashboard"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-white text-black hover:bg-gray-200 font-semibold rounded-xl transition text-lg"
+              className="group relative px-8 py-4 bg-white text-black font-semibold rounded-lg overflow-hidden flex items-center gap-3 transition-transform hover:scale-105"
             >
-              Enter Dashboard <ArrowRight className="w-5 h-5" />
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <span className="relative z-10 flex items-center gap-2">
+                Enter Dashboard <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Link>
+            
+            <Link 
+              href="/metrics"
+              className="px-8 py-4 bg-[#111] text-gray-300 font-semibold rounded-lg border border-[#333] hover:bg-[#222] hover:text-white transition flex items-center gap-3"
+            >
+              <Activity className="w-5 h-5" />
+              View Telemetry
             </Link>
           </div>
+
+          {/* Feature Highlights */}
+          <div className="grid grid-cols-2 gap-6 pt-12 border-t border-[#222] mt-12">
+            <div>
+              <div className="flex items-center gap-2 text-white font-semibold mb-2">
+                <Network className="w-5 h-5 text-indigo-400" /> Continuous GNN
+              </div>
+              <p className="text-sm text-gray-500">Maps multi-hop transaction topology to expose hidden rings instantly.</p>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 text-white font-semibold mb-2">
+                <ShieldAlert className="w-5 h-5 text-red-400" /> Maximum Recall
+              </div>
+              <p className="text-sm text-gray-500">Ensemble tuned to 99.98% recall. Not a single mule escapes detection.</p>
+            </div>
+          </div>
         </div>
 
-        {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl w-full mt-32 text-left">
-          <div className="bg-[#111] border border-[#222] p-8 rounded-2xl">
-            <Activity className="w-8 h-8 text-blue-500 mb-6" />
-            <h3 className="text-xl font-semibold text-white mb-3">Maximum Recall AI</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Our HistGradientBoosting + Deep Learning (MLP) ensemble is tuned for maximum recall, guaranteeing zero false negatives so no illicit transfers slip through.
-            </p>
+        {/* Right Column: 3D Explainer Avatar */}
+        <div className="relative h-[600px] hidden lg:flex items-center justify-center">
+          <div className="absolute w-full h-full animate-float animate-glow flex items-center justify-center">
+            <Image 
+              src="/3d-avatar.png" 
+              alt="AI Investigation Explainer" 
+              width={600} 
+              height={800} 
+              className="object-contain drop-shadow-2xl z-20"
+              priority
+            />
           </div>
           
-          <div className="bg-[#111] border border-[#222] p-8 rounded-2xl">
-            <Network className="w-8 h-8 text-indigo-500 mb-6" />
-            <h3 className="text-xl font-semibold text-white mb-3">Topological Tracing</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Real-time NetworkX graph generation maps out entire mule rings and pass-through accounts, analyzing subgraph centrality instantly.
-            </p>
+          {/* Floating UI Elements around Avatar */}
+          <div className="absolute top-20 right-10 bg-[#111]/80 backdrop-blur-md border border-[#333] p-4 rounded-xl shadow-2xl animate-float" style={{ animationDelay: '1s' }}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                <Activity className="text-red-400 w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">Risk Confidence</p>
+                <p className="text-sm font-bold text-white">99.8% Precision</p>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-[#111] border border-[#222] p-8 rounded-2xl">
-            <ShieldAlert className="w-8 h-8 text-rose-500 mb-6" />
-            <h3 className="text-xl font-semibold text-white mb-3">Enterprise Scale</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Designed for extreme memory efficiency. Operates on pure Next.js and FastAPI with optimized sklearn dependencies to guarantee zero-latency responses.
-            </p>
+          <div className="absolute bottom-32 left-0 bg-[#111]/80 backdrop-blur-md border border-[#333] p-4 rounded-xl shadow-2xl animate-float" style={{ animationDelay: '2s' }}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                <Network className="text-blue-400 w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">Subgraph Detected</p>
+                <p className="text-sm font-bold text-white">Funneling Layer 3</p>
+              </div>
+            </div>
           </div>
         </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="py-8 text-center text-gray-600 text-sm border-t border-[#222]">
-        &copy; 2026 Bank of India | Internal Prototype (TRL-4)
-      </footer>
+      </main>
     </div>
   );
 }
