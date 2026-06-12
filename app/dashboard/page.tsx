@@ -101,13 +101,13 @@ export default function Home() {
   }, [dynamicAccounts]);
 
   const pieData = useMemo(() => {
-    const p1 = dynamicAccounts.filter(a => a.priority === 'P1').length;
-    const p2 = dynamicAccounts.filter(a => a.priority === 'P2').length;
-    const p3 = dynamicAccounts.filter(a => a.priority === 'P3').length;
+    const p1 = dynamicAccounts.filter(a => a.priority === 'High' || a.priority === 'P1').length;
+    const p2 = dynamicAccounts.filter(a => a.priority === 'Medium' || a.priority === 'P2').length;
+    const p3 = dynamicAccounts.filter(a => a.priority === 'Small' || a.priority === 'P3').length;
     return [
-      { name: 'Critical (P1)', value: p1 },
-      { name: 'High (P2)', value: p2 },
-      { name: 'Medium (P3)', value: p3 }
+      { name: 'High', value: p1 },
+      { name: 'Medium', value: p2 },
+      { name: 'Small', value: p3 }
     ];
   }, [dynamicAccounts]);
 
@@ -159,15 +159,48 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-[#111] p-6 rounded-xl border border-[#222]">
               <h2 className="text-sm font-semibold mb-4 text-gray-300 border-b border-[#222] pb-3 uppercase tracking-wider">Automated Risk Analysis</h2>
-              <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
-                <p>System anomaly detection matched standard <strong>{selectedAccount.typology}</strong> patterns with high statistical confidence.</p>
-                <p>Graph evaluation indicates the account is highly central within a monitored subgraph, consistent with funnel or pass-through behavior.</p>
-                <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
-                  <li>High outgoing transfer velocity subsequent to unusual incoming credits.</li>
-                  <li>Funds retained below baseline threshold before onward movement.</li>
-                  <li>Network proximity to previously flagged counterparties.</li>
-                </ul>
-              </div>
+              
+              {selectedAccount.typology?.toLowerCase().includes("smurfing") ? (
+                <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
+                  <p>System anomaly detection matched standard <strong>Smurfing</strong> patterns with high statistical confidence.</p>
+                  <p>Analysis reveals a high volume of small-denomination deposits immediately preceding massive consolidated wire transfers.</p>
+                  <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
+                    <li>Deposit velocities exceed the 95th percentile for this customer segment.</li>
+                    <li>Amounts are consistently kept just below mandatory reporting thresholds.</li>
+                    <li>Rapid consolidation of funds into a single offshore clearing account.</li>
+                  </ul>
+                </div>
+              ) : selectedAccount.typology?.toLowerCase().includes("funnel") ? (
+                <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
+                  <p>System anomaly detection matched <strong>Funnel Account</strong> patterns with high statistical confidence.</p>
+                  <p>Graph evaluation indicates the account is highly central within a monitored subgraph, acting as a primary aggregation node.</p>
+                  <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
+                    <li>Inbound transfers originate from dozens of geographically dispersed, unrelated accounts.</li>
+                    <li>Funds retained below baseline threshold before onward movement.</li>
+                    <li>Network proximity to previously flagged counterparties.</li>
+                  </ul>
+                </div>
+              ) : selectedAccount.typology?.toLowerCase().includes("pass-through") ? (
+                <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
+                  <p>System anomaly detection matched <strong>Pass-Through</strong> behavior with high statistical confidence.</p>
+                  <p>The account acts merely as a temporary holding vehicle, exhibiting zero genuine wealth accumulation or legitimate commerce.</p>
+                  <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
+                    <li>1:1 ratio of incoming deposits to outgoing transfers within 24 hours.</li>
+                    <li>Transactions occur during unusual hours (2 AM - 4 AM local time).</li>
+                    <li>Immediate clearing to jurisdictions with high financial secrecy indices.</li>
+                  </ul>
+                </div>
+              ) : (
+                <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
+                  <p>System anomaly detection matched <strong>{selectedAccount.typology}</strong> patterns with high statistical confidence.</p>
+                  <p>Deep Learning validation indicates a highly anomalous transaction sequence deviating sharply from the account's historical baseline.</p>
+                  <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
+                    <li>Unusual transaction velocity mapping closely to known illicit topologies.</li>
+                    <li>Sudden spike in cross-border exposure limits.</li>
+                    <li>High confidence rating from the HistGradientBoosting ensemble.</li>
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div className="bg-[#111] p-6 rounded-xl border border-[#222]">
@@ -301,9 +334,9 @@ export default function Home() {
               </ResponsiveContainer>
             </div>
             <div className="flex gap-4 text-xs font-medium mt-2">
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500"></span> P1</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> P2</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> P3</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500"></span> High</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Medium</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Small</span>
             </div>
           </div>
 
@@ -351,11 +384,11 @@ export default function Home() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        acct.priority === 'P1' ? 'bg-[#2a1215] text-[#ff8a8a] border border-[#4a1c1c]' : 
-                        acct.priority === 'P2' ? 'bg-[#261810] text-[#ffb076] border border-[#402414]' : 
+                        (acct.priority === 'High' || acct.priority === 'P1') ? 'bg-[#2a1215] text-[#ff8a8a] border border-[#4a1c1c]' : 
+                        (acct.priority === 'Medium' || acct.priority === 'P2') ? 'bg-[#261810] text-[#ffb076] border border-[#402414]' : 
                         'bg-[#121a24] text-[#8ab4f8] border border-[#1a2c42]'
                       }`}>
-                        {acct.priority}
+                        {acct.priority === 'P1' ? 'High' : acct.priority === 'P2' ? 'Medium' : acct.priority === 'P3' ? 'Small' : acct.priority}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-gray-300 truncate max-w-[200px]">{acct.typology}</td>

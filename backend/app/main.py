@@ -124,7 +124,7 @@ def list_accounts() -> dict:
             "customer": f"Customer {i}",
             "segment": random.choice(segments),
             "score": score,
-            "priority": "P1" if score > 85 else "P2" if score > 70 else "P3",
+            "priority": "High" if score > 85 else "Medium" if score > 70 else "Small",
             "exposure": f"₹{random.uniform(0.1, 50.0):.1f}L",
             "typology": random.choice(typologies), # Never 'None'
             "ring": f"#{random.randint(1, 30)}" if is_mule else f"#{random.randint(31, 99)}",
