@@ -195,12 +195,23 @@ export default function LandingPage() {
              ))}
           </div>
 
+          {/* Cloud Speech Bubble */}
+          {isStarted && storyStep < storyFrames.length && (
+            <div className="absolute -top-24 md:-top-32 left-0 md:-left-20 bg-white text-black p-4 rounded-3xl rounded-br-sm shadow-xl max-w-[220px] md:max-w-[280px] z-30 transform -rotate-2 border-2 border-gray-100">
+              <p className="text-xs md:text-sm font-semibold leading-relaxed">
+                {storyFrames[storyStep]}
+              </p>
+              {/* Little cloud tail */}
+              <div className="absolute -bottom-3 right-4 w-4 h-4 bg-white transform rotate-45 border-b-2 border-r-2 border-gray-100"></div>
+            </div>
+          )}
+
           <Image 
             src="/3d-avatar.png" 
             alt="AI Investigation Explainer" 
             width={450} 
             height={600} 
-            className="w-[200px] sm:w-[280px] md:w-[350px] lg:w-[450px] object-contain drop-shadow-[0_0_20px_rgba(59,130,246,0.3)] md:drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] relative z-20"
+            className="w-[200px] sm:w-[280px] md:w-[350px] lg:w-[450px] object-contain drop-shadow-[0_0_20px_rgba(59,130,246,0.3)] md:drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] relative z-20 mix-blend-screen"
             priority
           />
         </div>
