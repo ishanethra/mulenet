@@ -497,13 +497,37 @@ export default function Home() {
                           <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Recent Transaction Flow</span>
                           <p className="text-md font-mono text-emerald-400">{selectedNetworkNode.txn}</p>
                         </div>
+
+                        <div className="pt-4 border-t border-[#222]">
+                          <span className="text-xs text-gray-500 uppercase tracking-wider block mb-3">Recent Ledger Activity</span>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-xs bg-[#111] p-2 rounded border border-[#222]">
+                              <span className="text-gray-400">Today, 14:32</span>
+                              <span className="text-red-400 font-mono">-{selectedNetworkNode.txn.split(' ')[0]}</span>
+                            </div>
+                            <div className="flex justify-between text-xs bg-[#111] p-2 rounded border border-[#222]">
+                              <span className="text-gray-400">Today, 09:15</span>
+                              <span className="text-emerald-400 font-mono">+{(parseInt(selectedNetworkNode.txn.replace(/[^0-9]/g, '')) * 0.4 || 12500).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}</span>
+                            </div>
+                            <div className="flex justify-between text-xs bg-[#111] p-2 rounded border border-[#222]">
+                              <span className="text-gray-400">Yesterday, 18:45</span>
+                              <span className="text-emerald-400 font-mono">+{(parseInt(selectedNetworkNode.txn.replace(/[^0-9]/g, '')) * 0.6 || 18000).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}</span>
+                            </div>
+                          </div>
+                        </div>
                         
                         <div className="pt-6 border-t border-[#222] mt-8">
                           <p className="text-xs text-gray-400 mb-4">Actions for this node:</p>
-                          <button className="w-full py-2 bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 text-sm font-medium transition-colors mb-3">
+                          <button 
+                            onClick={() => alert(`Loading full historical ledger for ${selectedNetworkNode.name}...`)}
+                            className="w-full py-2 bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 text-sm font-medium transition-colors mb-3"
+                          >
                             View Full History
                           </button>
-                          <button className="w-full py-2 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/20 text-sm font-medium transition-colors">
+                          <button 
+                            onClick={() => alert(`Node ${selectedNetworkNode.name} has been flagged for tier-2 compliance review.`)}
+                            className="w-full py-2 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/20 text-sm font-medium transition-colors"
+                          >
                             Flag as Suspicious
                           </button>
                         </div>
