@@ -607,11 +607,19 @@ export default function Home() {
                             </div>
                             <div className="flex justify-between text-xs bg-[#111] p-2 rounded border border-[#222]">
                               <span className="text-gray-400">Today, 09:15</span>
-                              <span className="text-emerald-400 font-mono">+{(parseInt(selectedNetworkNode.txn.replace(/[^0-9]/g, '')) * 0.4 || 12500).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}</span>
+                              <span className="text-emerald-400 font-mono">
+                                {selectedNetworkNode.txn.includes('L') || selectedNetworkNode.txn.includes('Cr') 
+                                  ? `+₹${(parseFloat(selectedNetworkNode.txn.replace(/[^0-9.]/g, '')) * 0.4 || 1.3).toFixed(1)}${selectedNetworkNode.txn.includes('Cr') ? 'Cr' : 'L'}`
+                                  : `+${(parseInt(selectedNetworkNode.txn.replace(/[^0-9]/g, '')) * 0.4 || 12500).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}`}
+                              </span>
                             </div>
                             <div className="flex justify-between text-xs bg-[#111] p-2 rounded border border-[#222]">
                               <span className="text-gray-400">Yesterday, 18:45</span>
-                              <span className="text-emerald-400 font-mono">+{(parseInt(selectedNetworkNode.txn.replace(/[^0-9]/g, '')) * 0.6 || 18000).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}</span>
+                              <span className="text-emerald-400 font-mono">
+                                {selectedNetworkNode.txn.includes('L') || selectedNetworkNode.txn.includes('Cr') 
+                                  ? `+₹${(parseFloat(selectedNetworkNode.txn.replace(/[^0-9.]/g, '')) * 0.6 || 2.0).toFixed(1)}${selectedNetworkNode.txn.includes('Cr') ? 'Cr' : 'L'}`
+                                  : `+${(parseInt(selectedNetworkNode.txn.replace(/[^0-9]/g, '')) * 0.6 || 18000).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}`}
+                              </span>
                             </div>
                           </div>
                         </div>
