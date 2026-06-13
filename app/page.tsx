@@ -132,14 +132,14 @@ export default function LandingPage() {
         
         {/* Left Column: Text & CTA */}
         <div className="space-y-8">
-          <div className="inline-block px-4 py-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium">
-            AI-Powered Anti-Money Laundering
-          </div>
-          
           <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
             Next-Generation <br />
             <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 text-transparent bg-clip-text">Fraud Intelligence</span>
           </h1>
+
+          <p className="text-gray-400 text-lg md:text-xl max-w-xl leading-relaxed">
+            Mulenet utilizes advanced Graph Neural Networks and behavioural analysis to automatically detect complex money mule rings, structured deposits, and hidden illicit financial flows in real-time.
+          </p>
 
           <div className="flex items-center gap-6 pt-4 z-50 relative">
             <div className="px-8 py-4 bg-green-500/10 text-green-400 font-semibold rounded-lg border border-green-500/30 flex items-center gap-3">
