@@ -84,15 +84,23 @@ export default function Home() {
       setIsFrozen(frozenState === 'true');
       setIsRfiSent(rfiState === 'true');
 
-      // SHAP instantly generated based on account string hash to avoid backend delay
-      const seed = (selectedAccount.id.charCodeAt(selectedAccount.id.length - 1) || 0) % 20 / 100.0;
-      const baseShap = [
-          {"name": "Transaction Velocity", "value": 34 * (1 + seed)},
-          {"name": "Geographic Mismatch", "value": 28 * (1 + seed)},
-          {"name": "Structuring Pattern", "value": 21 * (1 - seed)},
-          {"name": "Device Hash Variance", "value": 17 * (1 - seed)}
-      ];
-      setShap(baseShap);
+      // Generate unique SHAP values based on account ID to ensure variety
+      const seedNum = selectedAccount.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const shuffledFeatures = [...featureImportance].sort((a, b) => {
+        const hashA = (seedNum * a.feature.length) % 100;
+        const hashB = (seedNum * b.feature.length) % 100;
+        return hashA - hashB;
+      });
+      
+      const top4 = shuffledFeatures.slice(0, 4);
+      let remainingValue = 100;
+      const dynamicShap = top4.map((feat, idx) => {
+        const val = idx === 3 ? remainingValue : Math.floor(remainingValue * (0.4 + ((seedNum % (idx + 2)) / 20)));
+        remainingValue -= val;
+        return { name: feat.feature, value: val };
+      }).sort((a, b) => b.value - a.value);
+      
+      setShap(dynamicShap);
 
       fetch(`https://mulenet-backend.onrender.com/api/v1/accounts/${selectedAccount.id}/ledger`)
         .then(res => res.json())
@@ -115,8 +123,8 @@ export default function Home() {
         const mappedAccounts = data.map((a: any) => ({
           ...a,
           riskScore: a.score,
-          priority: a.score >= 70 ? 'P1' : a.score >= 40 ? 'P2' : 'P3'
-        }));
+          priority: a.score >= 70 ? 'High' : a.score >= 40 ? 'Medium' : 'Low'
+        })).sort((a: any, b: any) => b.riskScore - a.riskScore);
         setDynamicAccounts(mappedAccounts);
         
         // Use the actual dataset to build the Probability Flux graph deterministically
@@ -132,24 +140,32 @@ export default function Home() {
           });
         }
         setLineData(flux);
+        
+        // Ensure report view loads from dynamic dataset if present in URL
+        if (accId) {
+          const acct = mappedAccounts.find((a: any) => a.id === accId);
+          if (acct) {
+            setSelectedAccount(acct);
+            setIsReportView(true);
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+        setLoading(false);
       })
       .catch(err => {
         console.error("Failed to load local dataset", err);
         setDynamicAccounts(fallbackAccounts);
+        
+        if (accId) {
+          const acct = fallbackAccounts.find((a: any) => a.id === accId);
+          if (acct) {
+            setSelectedAccount(acct);
+            setIsReportView(true);
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+        setLoading(false);
       });
-
-    const loadedAccounts = fallbackAccounts;
-    if (accId) {
-      const acct = loadedAccounts.find((a: any) => a.id === accId);
-      if (acct) {
-        setSelectedAccount(acct);
-        setIsReportView(true);
-        // Clear param so reload doesn't get stuck if user wants to go back
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-    }
-
-    setLoading(false);
   }, []);
 
   const filteredAccounts = useMemo(
