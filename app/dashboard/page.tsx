@@ -221,7 +221,7 @@ export default function Home() {
     // Convert back to Lakhs for standard formatting
     const exposureInLakhs = totalExposure / 100000;
     
-    const critical = dynamicAccounts.filter(a => a.score > 80).length;
+    const critical = dynamicAccounts.filter(a => a.score >= 80).length;
     const avgScore = dynamicAccounts.reduce((acc, curr) => acc + curr.score, 0) / (dynamicAccounts.length || 1);
     
     return {
