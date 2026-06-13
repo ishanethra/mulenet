@@ -37,57 +37,15 @@ import { accounts as fallbackAccounts } from "@/lib/data";
 const COLORS = ['#ef4444', '#f59e0b', '#3b82f6'];
 
 const InfoTooltip = ({ term, desc }: { term: string, desc: string }) => (
-  <div className="group relative inline-flex items-center cursor-help underline decoration-dashed decoration-gray-500 underline-offset-4">
-    {term}
-    <div className="pointer-events-none absolute top-full left-1/2 z-50 mt-2 w-56 -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100 font-normal normal-case tracking-normal">
-      <div className="bg-[#1a1a1a] border border-[#333] text-gray-200 text-xs rounded-md p-2 shadow-2xl text-center">
-        {desc}
-      </div>
-      <div className="w-2 h-2 bg-[#1a1a1a] border-t border-l border-[#333] rotate-45 absolute -top-1 left-1/2 -translate-x-1/2"></div>
+  <div className="group relative inline-flex items-center cursor-help">
+    <span className="border-b border-dotted border-gray-500">{term}</span>
+    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-[#222] text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all pointer-events-none z-50">
+      {desc}
+      <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#222]"></div>
     </div>
   </div>
 );
 
-const FraudDNA = ({ accountId, score }: { accountId: string, score: number }) => {
-  // Deterministically generate a 120-bar barcode based on account ID
-  const seed = (accountId.charCodeAt(accountId.length - 1) || 0) + (accountId.charCodeAt(0) || 0);
-  
-  return (
-    <div className="bg-[#111] p-6 rounded-xl border border-[#222]">
-      <div className="flex items-center justify-between border-b border-[#222] mb-4 pb-3">
-        <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-2">
-          <Activity className="w-4 h-4 text-blue-400" /> Fraud DNA (3,924 Features)
-        </h2>
-        <span className="text-xs text-gray-500 font-mono">XAI SPECTROGRAM</span>
-      </div>
-      <div className="flex gap-[2px] h-24 items-end overflow-hidden group">
-        {Array.from({ length: 120 }).map((_, i) => {
-          // Pseudo-random deterministic values
-          const val = Math.sin(seed * (i + 1) * 0.1) * 0.5 + 0.5; // 0 to 1
-          const isCriticalBand = score > 80 && (Math.cos(seed * i) > 0.7);
-          
-          const height = Math.max(10, val * 100) + "%";
-          const color = isCriticalBand ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" : 
-                        val > 0.8 ? "bg-indigo-500/80" : 
-                        val > 0.4 ? "bg-blue-500/40" : "bg-gray-700/30";
-
-          return (
-            <div 
-              key={i} 
-              className={`flex-1 ${color} rounded-t-sm transition-all duration-300 hover:bg-white hover:shadow-[0_0_10px_white] cursor-crosshair relative`}
-              style={{ height }}
-              title={`Feature F${Math.floor(val * 3924)}: ${val.toFixed(3)}${isCriticalBand ? ' [ANOMALY DETECTED]' : ''}`}
-            ></div>
-          );
-        })}
-      </div>
-      <p className="text-xs text-gray-500 mt-3 flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-red-500 inline-block animate-pulse"></span>
-        Red bands indicate specific mathematical anomalies out of the 3,924 dimensional dataset that triggered the {score}/100 risk score.
-      </p>
-    </div>
-  );
-};
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -101,10 +59,10 @@ export default function Home() {
   // Action Button States
   const [isFreezing, setIsFreezing] = useState(false);
   const [isFrozen, setIsFrozen] = useState(false);
-  
   const [isDownloadingSar, setIsDownloadingSar] = useState(false);
   const [isDispatching, setIsDispatching] = useState(false);
   const [isRfiSent, setIsRfiSent] = useState(false);
+  const [isEli5Mode, setIsEli5Mode] = useState(false);
 
   // Network Modal States
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
@@ -378,7 +336,7 @@ export default function Home() {
             </div>
 
             {/* Fraud DNA (Novelty XAI Feature) */}
-            <FraudDNA accountId={selectedAccount.id} score={selectedAccount.score} />
+
 
             {/* Network Intel Graph */}
             <div className="bg-[#111] p-6 rounded-xl border border-[#222]">
@@ -403,7 +361,7 @@ export default function Home() {
                       { x: 25, y: 45, z: 200, name: 'Pass-through A' },
                       { x: 20, y: 15, z: 200, name: 'Pass-through B' },
                       { x: 35, y: 30, z: 800, name: 'Offshore Destination' },
-                    ]} fill="#ef4444" line={{ stroke: "#333", strokeWidth: 2 }} />
+                    ]} fill="#ef4444" line={{ stroke: "#ef4444", strokeWidth: 2, className: "animate-money-flow opacity-80" }} />
                   </ScatterChart>
                 </ResponsiveContainer>
               </div>
@@ -412,10 +370,29 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div className="bg-[#111] p-6 rounded-xl border border-[#222]">
-              <h2 className="text-sm font-semibold mb-4 text-gray-300 border-b border-[#222] pb-3 uppercase tracking-wider">
-                <InfoTooltip term="Automated Risk Analysis" desc="AI-generated breakdown of why this account was flagged." />
-              </h2>
+              <div className="flex items-center justify-between border-b border-[#222] mb-4 pb-3">
+                <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                  <InfoTooltip term="Automated Risk Analysis" desc="AI-generated breakdown of why this account was flagged." />
+                </h2>
+                <button 
+                  onClick={() => setIsEli5Mode(!isEli5Mode)}
+                  className={`text-xs px-3 py-1.5 rounded-lg font-mono transition-colors shadow-sm ${isEli5Mode ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 shadow-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-blue-500/20 shadow-blue-500/10'}`}
+                >
+                  {isEli5Mode ? '🧠 Technical Mode' : '👶 EL15 Mode'}
+                </button>
+              </div>
               
+              {isEli5Mode ? (
+                <div className="space-y-4">
+                  <div className="p-4 bg-emerald-900/10 border border-emerald-500/20 rounded-lg">
+                    <p className="text-emerald-400 font-mono mb-2 text-xs uppercase tracking-wider">Explain Like I'm 15</p>
+                    <p className="text-gray-300 leading-relaxed text-sm">
+                      Think of this account like a busy train station. Normally, 5 people get off a train and calmly walk home. But here, 50,000 people arrived at once, and immediately sprinted onto 20 different trains going to offshore destinations in under a second. That's physically impossible for a normal human to do, so the AI flagged it as an automated money mule.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
               {selectedAccount.typology?.toLowerCase().includes("smurfing") ? (
                 <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
                   <p>System anomaly detection matched standard <strong>Smurfing</strong> patterns with high statistical confidence.</p>
@@ -438,25 +415,24 @@ export default function Home() {
                 </div>
               ) : selectedAccount.typology?.toLowerCase().includes("pass-through") ? (
                 <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
-                  <p>System anomaly detection matched <strong>Pass-Through</strong> behavior with high statistical confidence.</p>
-                  <p>The account acts merely as a temporary holding vehicle, exhibiting zero genuine wealth accumulation or legitimate commerce.</p>
+                  <p>System anomaly detection matched <strong>Pass-Through Entity</strong> patterns.</p>
+                  <p>The account acts merely as a temporary holding vehicle, exhibiting zero genuine wealth accumulation.</p>
                   <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
                     <li>1:1 ratio of incoming deposits to outgoing transfers within 24 hours.</li>
-                    <li>Transactions occur during unusual hours (2 AM - 4 AM local time).</li>
-                    <li>Immediate clearing to jurisdictions with high financial secrecy indices.</li>
+                    <li>Transactions occur during unusual hours.</li>
+                    <li>Immediate clearing to offshore jurisdictions.</li>
                   </ul>
                 </div>
               ) : (
                 <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
-                  <p>System anomaly detection matched <strong>{selectedAccount.typology}</strong> patterns with high statistical confidence.</p>
-                  <p>Deep Learning validation indicates a highly anomalous transaction sequence deviating sharply from the account's historical baseline.</p>
+                  <p>Generic anomaly detection triggered based on volume and velocity heuristics.</p>
                   <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
-                    <li>Unusual transaction velocity mapping closely to known illicit topologies.</li>
-                    <li>Sudden spike in cross-border exposure limits.</li>
-                    <li>High confidence rating from the HistGradientBoosting ensemble.</li>
+                    <li>Account age and volume do not align with statistical peers.</li>
+                    <li>Frequent, large interactions with unverified third parties.</li>
                   </ul>
                 </div>
               )}
+              </>)}
               
               <div className="mt-6 pt-4 border-t border-[#222]">
                 <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3 flex items-center gap-2">
@@ -516,9 +492,11 @@ export default function Home() {
                     <Network className="w-6 h-6 text-blue-500" />
                     Network Intelligence Topology: {selectedAccount.id}
                   </h2>
-                  <button onClick={() => setIsNetworkModalOpen(false)} className="text-gray-500 hover:text-white transition-colors p-2 rounded-full hover:bg-[#222]">
-                    <X className="w-6 h-6" />
-                  </button>
+                  <div className="flex items-center gap-4">
+                    <button onClick={() => setIsNetworkModalOpen(false)} className="text-gray-500 hover:text-white transition-colors p-2 rounded-full hover:bg-[#222]">
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
@@ -540,7 +518,7 @@ export default function Home() {
                             { x: 35, y: 30, z: 800, name: 'Offshore Destination', type: 'International', risk: 'Critical', txn: '₹4.5L (Consolidated)' },
                           ]} 
                           fill="#3b82f6" 
-                          line={{ stroke: "#444", strokeWidth: 1 }}
+                          line={{ stroke: "#3b82f6", strokeWidth: 2, className: "animate-money-flow opacity-80" }}
                           onClick={(e) => {
                             setSelectedNetworkNode(e);
                             setNodeActionMessage(null);
@@ -549,11 +527,11 @@ export default function Home() {
                         >
                           {
                             [
-                              { x: 10, y: 20, z: 200, name: 'Suspect Origin', type: 'External Bank', risk: 'High', txn: '₹4.5L (Incoming)' },
-                              { x: 15, y: 35, z: 600, name: selectedAccount.id, type: 'Target Account', risk: 'Critical', txn: 'Main Node' },
-                              { x: 25, y: 45, z: 200, name: 'Pass-through A', type: 'Checking', risk: 'Medium', txn: '₹1.2L (Outgoing)' },
-                              { x: 20, y: 15, z: 200, name: 'Pass-through B', type: 'Savings', risk: 'Medium', txn: '₹3.3L (Outgoing)' },
-                              { x: 35, y: 30, z: 800, name: 'Offshore Destination', type: 'International', risk: 'Critical', txn: '₹4.5L (Consolidated)' }
+                              { x: 10, y: 20, z: 200, name: 'Suspect Origin', accountId: dynamicAccounts[0]?.id || 'AC-100001', type: 'External Bank', risk: 'High', txn: '₹4.5L (Incoming)' },
+                              { x: 15, y: 35, z: 600, name: selectedAccount.id, accountId: selectedAccount.id, type: 'Target Account', risk: 'Critical', txn: 'Main Node' },
+                              { x: 25, y: 45, z: 200, name: 'Pass-through A', accountId: dynamicAccounts[2]?.id || 'AC-100002', type: 'Checking', risk: 'Medium', txn: '₹1.2L (Outgoing)' },
+                              { x: 20, y: 15, z: 200, name: 'Pass-through B', accountId: dynamicAccounts[3]?.id || 'AC-100003', type: 'Savings', risk: 'Medium', txn: '₹3.3L (Outgoing)' },
+                              { x: 35, y: 30, z: 800, name: 'Offshore Destination', accountId: dynamicAccounts[4]?.id || 'AC-100004', type: 'International', risk: 'Critical', txn: '₹4.5L (Consolidated)' }
                             ].map((entry, index) => (
                                <Cell key={`cell-${index}`} fill={selectedNetworkNode?.name === entry.name ? '#ef4444' : (entry.name === selectedAccount.id ? '#f59e0b' : '#3b82f6')} />
                             ))
@@ -641,14 +619,12 @@ export default function Home() {
                           )}
                           <button 
                             onClick={() => {
-                              if (selectedNetworkNode.name === selectedAccount.id) {
+                              if (selectedNetworkNode.accountId === selectedAccount.id) {
                                 setNodeActionMessage(`You are already viewing the full history and ledger for ${selectedAccount.id} in the background pane.`);
                                 setTimeout(() => setIsNetworkModalOpen(false), 2000);
-                              } else if (selectedNetworkNode.name.startsWith('AC-')) {
+                              } else if (selectedNetworkNode.accountId) {
                                 setIsNetworkModalOpen(false);
-                                openReport(selectedNetworkNode.name);
-                              } else {
-                                setNodeActionMessage(`Ledger exported. Preparing historical view for ${selectedNetworkNode.name}...`);
+                                openReport(selectedNetworkNode.accountId);
                               }
                             }}
                             className="w-full py-2 bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 text-sm font-medium transition-colors mb-3"
