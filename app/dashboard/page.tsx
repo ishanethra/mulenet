@@ -361,7 +361,7 @@ export default function Home() {
                       { x: 25, y: 45, z: 200, name: 'Pass-through A' },
                       { x: 20, y: 15, z: 200, name: 'Pass-through B' },
                       { x: 35, y: 30, z: 800, name: 'Offshore Destination' },
-                    ]} fill="#ef4444" line={{ stroke: "#ef4444", strokeWidth: 2, className: "animate-money-flow opacity-80" }} />
+                    ]} fill="#ef4444" line={{ stroke: "#ef4444", strokeWidth: 2, strokeDasharray: "8 8", className: "animate-money-flow opacity-80" }} />
                   </ScatterChart>
                 </ResponsiveContainer>
               </div>
@@ -518,7 +518,7 @@ export default function Home() {
                             { x: 35, y: 30, z: 800, name: 'Offshore Destination', type: 'International', risk: 'Critical', txn: '₹4.5L (Consolidated)' },
                           ]} 
                           fill="#3b82f6" 
-                          line={{ stroke: "#3b82f6", strokeWidth: 2, className: "animate-money-flow opacity-80" }}
+                          line={{ stroke: "#3b82f6", strokeWidth: 2, strokeDasharray: "8 8", className: "animate-money-flow opacity-80" }}
                           onClick={(e) => {
                             setSelectedNetworkNode(e);
                             setNodeActionMessage(null);

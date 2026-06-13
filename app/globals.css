@@ -21,6 +21,16 @@
     background-size: 40px 40px;
     animation: gridMove 20s linear infinite;
   }
+  
+  .animate-money-flow {
+    stroke-dasharray: 8 8 !important;
+    animation: flow 1.5s linear infinite !important;
+  }
+}
+
+@keyframes flow {
+  from { stroke-dashoffset: 16; }
+  to { stroke-dashoffset: 0; }
 }
 
 @keyframes float {
