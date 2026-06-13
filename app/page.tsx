@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowRight, ShieldAlert, Activity, Network, Play } from "lucide-react";
+import { ArrowRight, ShieldAlert, Activity, Network, Play, Target } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -156,18 +156,30 @@ export default function LandingPage() {
           </div>
 
           {/* Feature Highlights */}
-          <div className="grid grid-cols-2 gap-6 pt-12 border-t border-[#222] mt-12">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-10 pt-12 border-t border-[#222] mt-12">
             <div>
               <div className="flex items-center gap-2 text-white font-semibold mb-2">
-                <Network className="w-5 h-5 text-indigo-400" /> Continuous GNN
+                <Network className="w-5 h-5 text-indigo-400" /> Graph Neural Networks
               </div>
-              <p className="text-sm text-gray-500">Maps multi-hop transaction topology to expose hidden rings instantly.</p>
+              <p className="text-sm text-gray-500">Maps multi-hop transaction topologies to uncover hidden money mule rings and structured deposits instantly.</p>
             </div>
             <div>
               <div className="flex items-center gap-2 text-white font-semibold mb-2">
-                <ShieldAlert className="w-5 h-5 text-red-400" /> Maximum Recall
+                <ShieldAlert className="w-5 h-5 text-red-400" /> Explainable AI (XAI)
               </div>
-              <p className="text-sm text-gray-500">Ensemble tuned to 99.98% recall. Not a single mule escapes detection.</p>
+              <p className="text-sm text-gray-500">Generates clear, human-readable risk drivers (SHAP values) so investigators know exactly why an account was flagged.</p>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 text-white font-semibold mb-2">
+                <Activity className="w-5 h-5 text-green-400" /> Behavioral Profiling
+              </div>
+              <p className="text-sm text-gray-500">Analyzes device hash variances, geographic mismatches, and transaction velocity to detect anomalies in real-time.</p>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 text-white font-semibold mb-2">
+                <Target className="w-5 h-5 text-orange-400" /> Maximum Recall
+              </div>
+              <p className="text-sm text-gray-500">Our deep learning ensemble is heavily tuned for maximum recall. Not a single illicit mule node escapes detection.</p>
             </div>
           </div>
         </div>
