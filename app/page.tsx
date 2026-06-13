@@ -75,24 +75,32 @@ export default function LandingPage() {
       
       utterance.pitch = 1.0;
       utterance.rate = 0.85; // Speak slower and more clearly
-      window.speechSynthesis.speak(utterance);
-    }
+      
+      utterance.onend = () => {
+        setStoryStep((prev) => {
+          if (prev < storyFrames.length - 1) {
+            return prev + 1;
+          } else {
+            setTimeout(() => router.push('/dashboard'), 2000);
+            return prev;
+          }
+        });
+      };
+      
+      // Fallback for Chrome bug where onend sometimes fails on long utterances
+      // The longest string is ~250 chars. Slower rate = max 15 seconds.
+      const fallbackTimer = setTimeout(() => {
+        if (window.speechSynthesis.speaking) return; // Wait if still speaking
+        utterance.onend?.(new Event('fallback'));
+      }, 20000);
 
-    const timer = setInterval(() => {
-      setStoryStep((prev) => {
-        if (prev < storyFrames.length - 1) {
-          return prev + 1;
-        } else {
-          clearInterval(timer);
-          setTimeout(() => router.push('/dashboard'), 3000);
-          return prev;
-        }
-      });
-    }, 8000); // Increased from 5s to 8s to allow time for slower speech
-    return () => {
-      clearInterval(timer);
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    };
+      window.speechSynthesis.speak(utterance);
+      
+      return () => {
+        clearTimeout(fallbackTimer);
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      };
+    }
   }, [router, storyFrames.length, storyStep, isStarted, voicesLoaded, selectedVoiceURI]);
 
   return (
