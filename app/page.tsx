@@ -117,7 +117,6 @@ export default function LandingPage() {
       <nav className="absolute top-0 w-full p-8 flex justify-between items-center z-50">
         <div className="flex items-center gap-2">
           <ShieldAlert className="text-red-500 w-8 h-8" />
-          <span className="font-bold text-2xl tracking-wider text-white">MULENET</span>
         </div>
         <div className="flex gap-4 items-center">
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-semibold tracking-widest uppercase">
