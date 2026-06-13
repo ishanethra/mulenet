@@ -137,7 +137,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-gray-400 text-lg md:text-xl max-w-xl leading-relaxed">
-            Mulenet utilizes advanced Graph Neural Networks, HistGradientBoosting, and behavioural analysis to automatically detect complex money mule rings, structured deposits, and hidden illicit financial flows in real-time.
+            Mulenet utilizes advanced Graph Neural Networks, and a powerful Random Forest & HistGradientBoosting ensemble to automatically detect complex money mule rings, structured deposits, and hidden illicit financial flows in real-time.
           </p>
 
           <div className="flex items-center gap-6 pt-4 z-50 relative">
@@ -176,9 +176,9 @@ export default function LandingPage() {
             </div>
             <div>
               <div className="flex items-center gap-2 text-white font-semibold mb-2">
-                <Target className="w-5 h-5 text-orange-400" /> HistGradientBoosting Ensemble
+                <Target className="w-5 h-5 text-orange-400" /> Random Forest & HGB Ensemble
               </div>
-              <p className="text-sm text-gray-500">Our histogram-based gradient boosting models are heavily tuned for maximum recall. Not a single illicit mule node escapes detection.</p>
+              <p className="text-sm text-gray-500">By combining Random Forest with HistGradientBoosting in a stacked ensemble, we achieve unprecedented accuracy and a near-perfect recall score, ensuring no illicit mule escapes detection.</p>
             </div>
           </div>
         </div>
