@@ -15,12 +15,12 @@ export default function LandingPage() {
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
 
   const storyFrames = [
-    "Hello! I am your MuleNet AI Investigator.",
-    "Banks are facing a massive surge in financial fraud, with criminals using hidden 'mule' accounts to conceal stolen funds.",
-    "Traditional rule-based systems simply cannot keep up with these evolving, complex fraud patterns.",
-    "That is why we built MuleNet. Our AI analyzes thousands of transactional features to detect suspicious behavior instantly.",
-    "By learning from hidden data patterns, we generate predictive risk scores to stop fraudulent fund movements before they happen.",
-    "Our classification model distinguishes criminals from legitimate users with maximum accuracy. Let's look at the dashboard."
+    "Let me tell you what's really happening out there. Imagine someone called Priya. She gets a WhatsApp message: 'Work from home. Earn ₹20,000 a week. Just receive and forward payments.' Sounds harmless. She says yes.",
+    "What Priya doesn't know is that she's just become a money mule. Fraudsters send stolen money into her account — and she passes it along. Her account is now a getaway vehicle for financial crime.",
+    "The stolen funds bounce through 5 different bank accounts in under 10 minutes — some in different banks, some across state lines. Old-fashioned rule-based systems? They miss it completely. The trail goes cold.",
+    "That's where I step in. I watch millions of transactions at once. I'm trained on real fraud patterns, so when Priya's account suddenly breaks a large transfer into 20 small outgoing payments, I notice. Immediately.",
+    "I also pull in live alerts from India's national cyber-fraud system, the I4C NCRP. If that account has been reported anywhere, I know. I connect dots that no human team could track manually.",
+    "The account is flagged. The account is frozen. A regulatory report is filed automatically. The money stops moving. Priya is protected. The fraudster is caught. That's what MULENET was built to do."
   ];
 
   const avatarPositions = [
