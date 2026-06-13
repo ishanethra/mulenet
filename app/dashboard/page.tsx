@@ -62,7 +62,6 @@ export default function Home() {
   const [isDownloadingSar, setIsDownloadingSar] = useState(false);
   const [isDispatching, setIsDispatching] = useState(false);
   const [isRfiSent, setIsRfiSent] = useState(false);
-  const [isEli5Mode, setIsEli5Mode] = useState(false);
 
   // Network Modal States
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false);
@@ -374,65 +373,76 @@ export default function Home() {
                 <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
                   <InfoTooltip term="Automated Risk Analysis" desc="AI-generated breakdown of why this account was flagged." />
                 </h2>
-                <button 
-                  onClick={() => setIsEli5Mode(!isEli5Mode)}
-                  className={`text-xs px-3 py-1.5 rounded-lg font-mono transition-colors shadow-sm ${isEli5Mode ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 shadow-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-blue-500/20 shadow-blue-500/10'}`}
-                >
-                  {isEli5Mode ? '🧠 Technical Mode' : '👶 EL15 Mode'}
-                </button>
               </div>
               
-              {isEli5Mode ? (
-                <div className="space-y-4">
+              {selectedAccount.typology?.toLowerCase().includes("smurfing") ? (
+                <div className="space-y-6">
                   <div className="p-4 bg-emerald-900/10 border border-emerald-500/20 rounded-lg">
-                    <p className="text-emerald-400 font-mono mb-2 text-xs uppercase tracking-wider">Explain Like I'm 15</p>
+                    <p className="text-emerald-400 font-mono mb-2 text-xs uppercase tracking-wider">👶 Explain Like I'm 15: Smurfing</p>
                     <p className="text-gray-300 leading-relaxed text-sm">
-                      Think of this account like a busy train station. Normally, 5 people get off a train and calmly walk home. But here, 50,000 people arrived at once, and immediately sprinted onto 20 different trains going to offshore destinations in under a second. That's physically impossible for a normal human to do, so the AI flagged it as an automated money mule.
+                      <strong>Smurfing</strong> means breaking a massive amount of illegal money into tiny, unnoticeable pieces. Think of it like trying to move a mountain of sand into a bank. If you bring a dump truck, security asks questions. If you hire 1,000 people to each carry a tiny bucket, nobody notices. This account is acting as one of those buckets, making tiny deposits just below the radar.
                     </p>
+                  </div>
+                  <div className="text-sm text-gray-400 leading-relaxed">
+                    <p><strong>Technical Analysis:</strong></p>
+                    <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-2">
+                      <li>Deposit velocities exceed the 95th percentile for this customer segment.</li>
+                      <li>Amounts are consistently kept just below mandatory reporting thresholds.</li>
+                      <li>Rapid consolidation of funds into a single offshore clearing account.</li>
+                    </ul>
+                  </div>
+                </div>
+              ) : selectedAccount.typology?.toLowerCase().includes("funnel") ? (
+                <div className="space-y-6">
+                  <div className="p-4 bg-emerald-900/10 border border-emerald-500/20 rounded-lg">
+                    <p className="text-emerald-400 font-mono mb-2 text-xs uppercase tracking-wider">👶 Explain Like I'm 15: Funnel Account</p>
+                    <p className="text-gray-300 leading-relaxed text-sm">
+                      A <strong>Funnel Account</strong> is exactly what it sounds like—a giant collector. Imagine dozens of small streams flowing into one big river. Fraudsters use many stolen accounts to send small amounts of money here. This account collects it all into one massive pool before flushing it overseas in a single large wire transfer.
+                    </p>
+                  </div>
+                  <div className="text-sm text-gray-400 leading-relaxed">
+                    <p><strong>Technical Analysis:</strong></p>
+                    <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-2">
+                      <li>Inbound transfers originate from dozens of geographically dispersed, unrelated accounts.</li>
+                      <li>Funds retained below baseline threshold before onward movement.</li>
+                      <li>Network proximity to previously flagged counterparties.</li>
+                    </ul>
+                  </div>
+                </div>
+              ) : selectedAccount.typology?.toLowerCase().includes("pass-through") ? (
+                <div className="space-y-6">
+                  <div className="p-4 bg-emerald-900/10 border border-emerald-500/20 rounded-lg">
+                    <p className="text-emerald-400 font-mono mb-2 text-xs uppercase tracking-wider">👶 Explain Like I'm 15: Pass-Through Entity</p>
+                    <p className="text-gray-300 leading-relaxed text-sm">
+                      A <strong>Pass-Through Entity</strong> means the money comes in and immediately goes out. Think of this account like a busy subway turnstile. Nobody stays here; they just pass through. The AI flagged it because money arrives and is instantly sent away within seconds, a classic sign of automated, machine-driven money laundering.
+                    </p>
+                  </div>
+                  <div className="text-sm text-gray-400 leading-relaxed">
+                    <p><strong>Technical Analysis:</strong></p>
+                    <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-2">
+                      <li>1:1 ratio of incoming deposits to outgoing transfers within 24 hours.</li>
+                      <li>Transactions occur during unusual hours, exhibiting automated velocity.</li>
+                      <li>Immediate clearing to offshore jurisdictions.</li>
+                    </ul>
                   </div>
                 </div>
               ) : (
-                <>
-              {selectedAccount.typology?.toLowerCase().includes("smurfing") ? (
-                <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
-                  <p>System anomaly detection matched standard <strong>Smurfing</strong> patterns with high statistical confidence.</p>
-                  <p>Analysis reveals a high volume of small-denomination deposits immediately preceding massive consolidated wire transfers.</p>
-                  <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
-                    <li>Deposit velocities exceed the 95th percentile for this customer segment.</li>
-                    <li>Amounts are consistently kept just below mandatory reporting thresholds.</li>
-                    <li>Rapid consolidation of funds into a single offshore clearing account.</li>
-                  </ul>
-                </div>
-              ) : selectedAccount.typology?.toLowerCase().includes("funnel") ? (
-                <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
-                  <p>System anomaly detection matched <strong>Funnel Account</strong> patterns with high statistical confidence.</p>
-                  <p>Graph evaluation indicates the account is highly central within a monitored subgraph, acting as a primary aggregation node.</p>
-                  <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
-                    <li>Inbound transfers originate from dozens of geographically dispersed, unrelated accounts.</li>
-                    <li>Funds retained below baseline threshold before onward movement.</li>
-                    <li>Network proximity to previously flagged counterparties.</li>
-                  </ul>
-                </div>
-              ) : selectedAccount.typology?.toLowerCase().includes("pass-through") ? (
-                <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
-                  <p>System anomaly detection matched <strong>Pass-Through Entity</strong> patterns.</p>
-                  <p>The account acts merely as a temporary holding vehicle, exhibiting zero genuine wealth accumulation.</p>
-                  <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
-                    <li>1:1 ratio of incoming deposits to outgoing transfers within 24 hours.</li>
-                    <li>Transactions occur during unusual hours.</li>
-                    <li>Immediate clearing to offshore jurisdictions.</li>
-                  </ul>
-                </div>
-              ) : (
-                <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
-                  <p>Generic anomaly detection triggered based on volume and velocity heuristics.</p>
-                  <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-4">
-                    <li>Account age and volume do not align with statistical peers.</li>
-                    <li>Frequent, large interactions with unverified third parties.</li>
-                  </ul>
+                <div className="space-y-6">
+                  <div className="p-4 bg-emerald-900/10 border border-emerald-500/20 rounded-lg">
+                    <p className="text-emerald-400 font-mono mb-2 text-xs uppercase tracking-wider">👶 Explain Like I'm 15: Anomaly</p>
+                    <p className="text-gray-300 leading-relaxed text-sm">
+                      Think of this account's behavior like a person who suddenly started speaking a language they don't know, buying things they've never bought, at 3 AM. The AI flagged it because its recent massive transactions completely break the normal pattern for a typical user of this age and history.
+                    </p>
+                  </div>
+                  <div className="text-sm text-gray-400 leading-relaxed">
+                    <p><strong>Technical Analysis:</strong></p>
+                    <ul className="list-disc pl-5 space-y-2 text-gray-300 mt-2">
+                      <li>Account age and volume do not align with statistical peers.</li>
+                      <li>Frequent, large interactions with unverified third parties.</li>
+                    </ul>
+                  </div>
                 </div>
               )}
-              </>)}
               
               <div className="mt-6 pt-4 border-t border-[#222]">
                 <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3 flex items-center gap-2">
