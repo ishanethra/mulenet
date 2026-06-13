@@ -32,7 +32,7 @@ import {
   Scatter,
   ZAxis
 } from "recharts";
-import { accounts as fallbackAccounts } from "@/lib/data";
+import { accounts as fallbackAccounts, featureImportance } from "@/lib/data";
 
 const COLORS = ['#ef4444', '#f59e0b', '#3b82f6'];
 
