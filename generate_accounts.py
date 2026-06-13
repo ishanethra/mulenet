@@ -40,7 +40,7 @@ with open('DataSet.csv', 'r') as csvfile:
         score = random.randint(80, 99) if target == 1 else random.randint(10, 75)
         
         account_id = f"AC-{random.randint(100000, 999999)}"
-        exposure = f"${random.randint(10, 999)}K" if score < 70 else f"${random.uniform(1.0, 10.0):.1f}M"
+        exposure = f"₹{random.randint(5, 95)}L" if score < 70 else f"₹{random.uniform(1.0, 15.0):.1f}Cr"
         
         try:
             account_type = row[target_idx - 38]

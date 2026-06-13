@@ -211,7 +211,8 @@ export default function Home() {
         if (!isNaN(num)) {
           if (str.includes('M')) val = num * 1000000;
           else if (str.includes('K')) val = num * 1000;
-          else if (str.includes('L')) val = num * 100000; // fallback support
+          else if (str.includes('CR')) val = num * 10000000;
+          else if (str.includes('L')) val = num * 100000;
           else val = num;
         }
       }
@@ -532,11 +533,11 @@ export default function Home() {
                         <Scatter 
                           name="Connected Accounts" 
                           data={[
-                            { x: 10, y: 20, z: 200, name: dynamicAccounts[1]?.id || 'AC-100001', type: 'External Bank', risk: 'High', txn: '$45,200 (Incoming)' },
+                            { x: 10, y: 20, z: 200, name: dynamicAccounts[1]?.id || 'AC-100001', type: 'External Bank', risk: 'High', txn: '₹4.5L (Incoming)' },
                             { x: 15, y: 35, z: 600, name: selectedAccount.id, type: 'Target Account', risk: 'Critical', txn: 'Main Node' },
-                            { x: 25, y: 45, z: 200, name: dynamicAccounts[2]?.id || 'AC-100002', type: 'Checking', risk: 'Medium', txn: '$12,000 (Outgoing)' },
-                            { x: 20, y: 15, z: 200, name: dynamicAccounts[3]?.id || 'AC-100003', type: 'Savings', risk: 'Medium', txn: '$33,200 (Outgoing)' },
-                            { x: 35, y: 30, z: 800, name: 'Offshore Destination', type: 'International', risk: 'Critical', txn: '$45,200 (Consolidated)' },
+                            { x: 25, y: 45, z: 200, name: dynamicAccounts[2]?.id || 'AC-100002', type: 'Checking', risk: 'Medium', txn: '₹1.2L (Outgoing)' },
+                            { x: 20, y: 15, z: 200, name: dynamicAccounts[3]?.id || 'AC-100003', type: 'Savings', risk: 'Medium', txn: '₹3.3L (Outgoing)' },
+                            { x: 35, y: 30, z: 800, name: 'Offshore Destination', type: 'International', risk: 'Critical', txn: '₹4.5L (Consolidated)' },
                           ]} 
                           fill="#3b82f6" 
                           line={{ stroke: "#444", strokeWidth: 1 }}
@@ -548,11 +549,11 @@ export default function Home() {
                         >
                           {
                             [
-                              { x: 10, y: 20, z: 200, name: 'Suspect Origin', type: 'External Bank', risk: 'High', txn: '$45,200 (Incoming)' },
+                              { x: 10, y: 20, z: 200, name: 'Suspect Origin', type: 'External Bank', risk: 'High', txn: '₹4.5L (Incoming)' },
                               { x: 15, y: 35, z: 600, name: selectedAccount.id, type: 'Target Account', risk: 'Critical', txn: 'Main Node' },
-                              { x: 25, y: 45, z: 200, name: 'Pass-through A', type: 'Checking', risk: 'Medium', txn: '$12,000 (Outgoing)' },
-                              { x: 20, y: 15, z: 200, name: 'Pass-through B', type: 'Savings', risk: 'Medium', txn: '$33,200 (Outgoing)' },
-                              { x: 35, y: 30, z: 800, name: 'Offshore Destination', type: 'International', risk: 'Critical', txn: '$45,200 (Consolidated)' }
+                              { x: 25, y: 45, z: 200, name: 'Pass-through A', type: 'Checking', risk: 'Medium', txn: '₹1.2L (Outgoing)' },
+                              { x: 20, y: 15, z: 200, name: 'Pass-through B', type: 'Savings', risk: 'Medium', txn: '₹3.3L (Outgoing)' },
+                              { x: 35, y: 30, z: 800, name: 'Offshore Destination', type: 'International', risk: 'Critical', txn: '₹4.5L (Consolidated)' }
                             ].map((entry, index) => (
                                <Cell key={`cell-${index}`} fill={selectedNetworkNode?.name === entry.name ? '#ef4444' : (entry.name === selectedAccount.id ? '#f59e0b' : '#3b82f6')} />
                             ))
