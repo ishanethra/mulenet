@@ -133,7 +133,7 @@ export default function Home() {
           ...a,
           riskScore: a.score,
           priority: a.score >= 70 ? 'High' : a.score >= 40 ? 'Medium' : 'Low'
-        })).sort((a: any, b: any) => b.riskScore - a.riskScore);
+        }));
         setDynamicAccounts(mappedAccounts);
         
         // Use the actual dataset to build the Probability Flux graph deterministically
