@@ -18,8 +18,21 @@ print(f"Found {len(critical_df)} critical alerts and adding {len(normal_df)} nor
 
 accounts = []
 
+typologies = [
+    "Structuring / Smurfing", 
+    "Dormancy break", 
+    "Peer deviation", 
+    "Pass-through / Funnel", 
+    "Rapid outbound flow", 
+    "Crypto conversion", 
+    "Offshore transfer"
+]
+
 # Process criticals
 for idx, row in critical_df.iterrows():
+    exposureVal = float(row.get("F1", 0) if not pd.isna(row.get("F1", 0)) else (idx % 50))
+    exposure = f"₹{(exposureVal/3).toFixed(1)}Cr" if exposureVal > 50 else f"₹{(exposureVal * 2.5 + 40):.1f}L"
+    
     accounts.append({
         "id": f"AC-DB-{100000 + idx}",
         "type": str(row.get("F3886", "Retail")),
@@ -31,6 +44,8 @@ for idx, row in critical_df.iterrows():
         "age": float(row.get("F3894", 35)) if not pd.isna(row.get("F3894")) else 35,
         "score": 80 + random.randint(0, 18), # 80-98 High
         "status": "High",
+        "exposure": f"₹{(random.uniform(2.5, 12.0)):.1f}Cr",
+        "typology": typologies[idx % len(typologies)],
         "rawFeatures": {}
     })
 
@@ -50,6 +65,8 @@ for idx, row in normal_df.iterrows():
         "age": float(row.get("F3894", 35)) if not pd.isna(row.get("F3894")) else 35,
         "score": score,
         "status": status,
+        "exposure": f"₹{(random.uniform(4.5, 80.0)):.1f}L",
+        "typology": typologies[idx % len(typologies)],
         "rawFeatures": {}
     })
 
