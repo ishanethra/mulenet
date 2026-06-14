@@ -1,5 +1,5 @@
 export const kpis = [
-  { label: "Critical accounts", value: "184", delta: "+12.4%", tone: "critical" },
+  { label: "Critical accounts", value: "81", delta: "Action required", tone: "critical" },
   { label: "Mule rings", value: "27", delta: "+5 today", tone: "warning" },
   { label: "PR-AUC", value: "0.914", delta: "ensemble", tone: "stable" },
   { label: "SAR drafts", value: "41", delta: "ready", tone: "stable" }
