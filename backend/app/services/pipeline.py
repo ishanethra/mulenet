@@ -171,39 +171,46 @@ def train_ensemble(df: pd.DataFrame) -> dict:
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42, stratify=y)
 
-    # ── High Accuracy / Minimum Recall Deep Learning Ensemble ─────────────────
-    # Goal: Use a Deep Learning neural network combined with Gradient Boosting
-    #       to achieve maximum accuracy and high precision (minimum recall).
-    #       It flags ONLY the most obvious, mathematically certain fraud.
-    #
-    # Model 1: HistGradientBoostingClassifier
-    #   - Handles the tabular data splits with extreme accuracy.
-    #
-    # Model 2: MLPClassifier (Multi-Layer Perceptron Neural Network)
-    #   - A pure scikit-learn Deep Learning model.
-    #   - Adds non-linear deep learning feature extraction without the
-    #     massive memory overhead of TensorFlow/PyTorch (Render safe).
-    #
-    # Threshold: Hardcoded to 0.75 to ensure MINIMUM RECALL and HIGH PRECISION.
+    # ── SMOTE (Synthetic Minority Over-sampling Technique) ────────────────────
+    # Generate synthetic examples of minority class (fraudulent transactions)
+    # This ensures our Deep Learning and Forest models have enough examples
+    # to learn the structural shape of illicit rings.
+    try:
+        from imblearn.over_sampling import SMOTE
+        smote = SMOTE(random_state=42)
+        x_train_resampled, y_train_resampled = smote.fit_resample(x_train, y_train)
+    except ImportError:
+        print("WARNING: imbalanced-learn not installed. Skipping SMOTE.")
+        x_train_resampled, y_train_resampled = x_train, y_train
     # ─────────────────────────────────────────────────────────────────────────
-    from sklearn.ensemble import HistGradientBoostingClassifier
-    from sklearn.neural_network import MLPClassifier
-    from sklearn.metrics import f1_score as _f1
 
-    # Model 1 — HistGradientBoosting (sklearn's LightGBM equivalent)
+    # ── Triple Ensemble: HGB + Random Forest + Deep Learning ─────────────────
+    from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
+    from sklearn.neural_network import MLPClassifier
+
+    # Model 1 — HistGradientBoosting
     hgb = HistGradientBoostingClassifier(
         max_iter=300,
         learning_rate=0.05,
         max_depth=5,
-        class_weight="balanced",
         random_state=42,
     )
-    hgb.fit(x_train, y_train)
+    hgb.fit(x_train_resampled, y_train_resampled)
     hgb_proba_test = hgb.predict_proba(x_test)[:, 1]
     hgb_proba_all  = hgb.predict_proba(x)[:, 1]
+    
+    # Model 2 — Random Forest Classifier
+    rf = RandomForestClassifier(
+        n_estimators=100,
+        max_depth=10,
+        random_state=42,
+        n_jobs=-1
+    )
+    rf.fit(x_train_resampled, y_train_resampled)
+    rf_proba_test = rf.predict_proba(x_test)[:, 1]
+    rf_proba_all  = rf.predict_proba(x)[:, 1]
 
-    # Model 2 — Deep Learning Neural Network (MLP)
-    # Using a lightweight architecture [100, 50] to prevent OOM
+    # Model 3 — Deep Learning Neural Network (MLP)
     mlp = MLPClassifier(
         hidden_layer_sizes=(100, 50),
         activation="relu",
@@ -212,20 +219,17 @@ def train_ensemble(df: pd.DataFrame) -> dict:
         max_iter=300,
         random_state=42,
     )
-    mlp.fit(x_train, y_train)
+    mlp.fit(x_train_resampled, y_train_resampled)
     mlp_proba_test = mlp.predict_proba(x_test)[:, 1]
     mlp_proba_all  = mlp.predict_proba(x)[:, 1]
 
-    # Feature importance: MLP doesn't have feature_importances_, so rely on HGB
+    # Weighted soft-vote ensemble: HGB (40%) + RF (30%) + DL (30%)
+    proba     = 0.40 * hgb_proba_test + 0.30 * rf_proba_test + 0.30 * mlp_proba_test
+    proba_all = 0.40 * hgb_proba_all  + 0.30 * rf_proba_all  + 0.30 * mlp_proba_all
+
     importances = np.asarray(hgb.feature_importances_)
 
-    # Weighted soft-vote ensemble: DL Neural Network + Gradient Boosting
-    proba     = 0.60 * hgb_proba_test + 0.40 * mlp_proba_test
-    proba_all = 0.60 * hgb_proba_all  + 0.40 * mlp_proba_all
-
     # ── Maximum Recall / Minimum False Negative Threshold ─────────────────────
-    # Lower the threshold to 0.15 to ensure we catch practically ALL fraud.
-    # This guarantees minimum false negatives, prioritizing recall over precision.
     best_thresh = 0.15
     # ─────────────────────────────────────────────────────────────────────────
 
