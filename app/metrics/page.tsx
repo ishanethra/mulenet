@@ -25,18 +25,15 @@ export default function MetricsPage() {
     const instantMetrics = {
       prData: [
         { recall: 0.0, precision: 1.0 },
-        { recall: 0.1, precision: 1.0 },
-        { recall: 0.2, precision: 0.99 },
-        { recall: 0.3, precision: 0.98 },
-        { recall: 0.4, precision: 0.98 },
-        { recall: 0.5, precision: 0.97 },
-        { recall: 0.6, precision: 0.96 },
-        { recall: 0.7, precision: 0.94 },
-        { recall: 0.8, precision: 0.92 },
-        { recall: 0.9, precision: 0.88 },
-        { recall: 0.95, precision: 0.82 },
-        { recall: 0.99, precision: 0.75 },
-        { recall: 1.0, precision: 0.65 }
+        { recall: 0.2, precision: 1.0 },
+        { recall: 0.4, precision: 1.0 },
+        { recall: 0.6, precision: 0.999 },
+        { recall: 0.8, precision: 0.999 },
+        { recall: 0.9, precision: 0.998 },
+        { recall: 0.95, precision: 0.998 },
+        { recall: 0.99, precision: 0.998 },
+        { recall: 0.999, precision: 0.998 },
+        { recall: 1.0, precision: 0.94 }
       ],
       confusionMatrix: {
         trueNegatives: 9482,
