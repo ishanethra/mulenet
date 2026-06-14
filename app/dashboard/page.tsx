@@ -39,9 +39,9 @@ const COLORS = ['#ef4444', '#f59e0b', '#3b82f6'];
 const InfoTooltip = ({ term, desc }: { term: string, desc: string }) => (
   <div className="group relative inline-flex items-center cursor-help">
     <span className="border-b border-dotted border-gray-500">{term}</span>
-    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-[#222] text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all pointer-events-none z-50">
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 p-2 bg-[#222] text-white text-xs rounded shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all pointer-events-none z-[9999]">
       {desc}
-      <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#222]"></div>
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-[#222]"></div>
     </div>
   </div>
 );
@@ -889,11 +889,11 @@ export default function Home() {
         </div>
 
         {/* Table */}
-        <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+        <div className="bg-[#111] border border-[#222] rounded-xl overflow-visible">
           <div className="px-6 py-4 border-b border-[#222]">
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-widest">Real-time Inference Queue</h3>
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-visible">
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-gray-500 uppercase bg-[#1a1a1a]">
                 <tr>
