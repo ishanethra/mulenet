@@ -107,7 +107,7 @@ export default function MetricsPage() {
             
             <div className="flex-1 w-full min-h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={metrics.prData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
+                <LineChart data={metrics.prData} margin={{ top: 30, right: 10, left: -20, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
                   <XAxis 
                     dataKey="recall" 
