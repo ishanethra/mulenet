@@ -36,10 +36,8 @@ export async function GET() {
       continue; // skip header
     }
     
-    // Limit to exactly 200 real accounts to prevent memory overload in the dashboard
-    if (rowCount > 200) {
-      break;
-    }
+    // Load all rows as requested (removed 200 row limit)
+    // Warning: This will process all 9,000+ rows which may take a few seconds
 
     // Split strictly by comma
     const columns = line.split(',');
@@ -78,7 +76,8 @@ export async function GET() {
       occupation: occupation.charAt(0).toUpperCase() + occupation.slice(1),
       gender: gender,
       segment: segment.charAt(0).toUpperCase() + segment.slice(1),
-      age: age
+      age: age,
+      rawFeatures: columns // Including all 3,925 columns as requested
     });
 
     rowCount++;
