@@ -165,25 +165,61 @@ def get_flux_v1() -> dict:
 
 @app.get("/api/v1/accounts/{account_id}/shap")
 def account_shap_v1(account_id: str) -> dict:
+    import shap
+    import pandas as pd
+    
     training = get_cached_training()
-    # Use the global feature importance from the ensemble, slightly varied deterministically per account
-    base_shap = training["feature_importance"]
     
-    import hashlib
-    seed_int = int(hashlib.md5(account_id.encode('utf-8')).hexdigest(), 16)
-    variance = (seed_int % 20) / 100.0
+    # Extract row index from account_id (e.g. "AC-DB-100005" -> 5)
+    try:
+        idx = int(account_id.split("-")[-1]) - 100000
+    except ValueError:
+        idx = 0
+        
+    x_processed = training["x_processed"]
+    if idx < 0 or idx >= len(x_processed):
+        idx = 0
+        
+    # Get the specific row for this account
+    row = x_processed.iloc[idx:idx+1]
     
-    drivers = []
-    for f in base_shap:
-        val = max(0.01, f["importance"] * (1.0 + variance)) * 100
+    # Calculate exact SHAP values using the Random Forest model
+    explainer = shap.TreeExplainer(training["model_rf"])
+    shap_values = explainer.shap_values(row)
+    
+    # shap_values[1] contains the SHAP values for the positive class (Fraud) in sklearn RF
+    target_shap = shap_values[1][0] if isinstance(shap_values, list) else shap_values[0]
+    
+    # Map back to feature names and sort by absolute impact
+    features = training["selected_features"]
+    feature_impacts = []
+    for i, feature_name in enumerate(features):
+        val = target_shap[i]
+        # Ignore negligible impacts
+        if abs(val) < 0.001:
+            continue
+            
+        # Map some common generic feature names to human-readable ones if possible
         name_map = {
             "F115": "Transaction Velocity", "F321": "Geographic Mismatch",
             "F527": "Structuring Pattern", "F531": "Device Hash Variance",
-            "F670": "Account Age"
+            "F670": "Account Age", "F3886": "Account Type", "F3891": "Occupation"
         }
-        drivers.append({"name": name_map.get(f["feature"], f"Feature {f['feature']}"), "value": val})
+        display_name = name_map.get(feature_name, f"Feature {feature_name}")
+        
+        feature_impacts.append({
+            "name": display_name,
+            "value": float(abs(val) * 100) # Scale up for UI visibility
+        })
+        
+    # Sort by absolute impact descending
+    feature_impacts.sort(key=lambda x: x["value"], reverse=True)
     
-    return {"shap": drivers[:4]}
+    # Fallback if somehow no features have impact
+    if not feature_impacts:
+        feature_impacts = [{"name": "Baseline Model Bias", "value": 15.0}]
+        
+    return {"shap": feature_impacts[:4]}
 
 @app.get("/api/v1/accounts/{account_id}/ledger")
 def account_ledger_v1(account_id: str) -> dict:

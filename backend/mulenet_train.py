@@ -86,3 +86,28 @@ print(classification_report(y_test, predictions, zero_division=0))
 
 print(f"ROC-AUC Score: {roc_auc_score(y_test, proba):.4f}")
 print(f"PR-AUC Score:  {average_precision_score(y_test, proba):.4f}")
+
+# 8. Exact SHAP Explainability
+print("\n=== SHAP Explainability ===")
+import shap
+print("Initializing SHAP TreeExplainer on Random Forest...")
+explainer = shap.TreeExplainer(rf)
+
+# Calculate SHAP values for the first 3 test accounts
+sample_x = x_test.iloc[:3]
+shap_values = explainer.shap_values(sample_x)
+
+target_shap = shap_values[1] if isinstance(shap_values, list) else shap_values
+
+for i in range(3):
+    print(f"\nAccount {i+1} Feature Impact:")
+    impacts = []
+    for j, feature in enumerate(x_test.columns):
+        val = target_shap[i][j]
+        if abs(val) > 0.001:
+            impacts.append((feature, val))
+    
+    impacts.sort(key=lambda item: abs(item[1]), reverse=True)
+    for feature, val in impacts[:5]:
+        print(f"  - {feature}: {val:+.4f} impact")
+

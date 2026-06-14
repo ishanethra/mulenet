@@ -297,5 +297,7 @@ def train_ensemble(df: pd.DataFrame) -> dict:
             {"feature": feature, "importance": float(score)}
             for feature, score in sorted(zip(selected, importances), key=lambda item: item[1], reverse=True)[:5]
         ],
-        "flagged_accounts": flagged_accounts
+        "flagged_accounts": flagged_accounts,
+        "model_rf": rf,
+        "x_processed": x
     }
