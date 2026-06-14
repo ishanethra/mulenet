@@ -125,7 +125,7 @@ export default function Home() {
     const params = new URLSearchParams(window.location.search);
     const accId = params.get("account");
 
-    fetch('/accounts.json')
+    fetch('/api/accounts')
       .then(res => res.json())
       .then(data => {
         const mappedAccounts = data.map((a: any) => ({
