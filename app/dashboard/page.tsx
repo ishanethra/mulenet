@@ -303,30 +303,13 @@ export default function Home() {
             </button>
             
             <button 
-              onClick={async () => {
-                setIsDownloadingSar(true);
-                try {
-                  const res = await fetch(`https://mulenet-backend.onrender.com/sar/${selectedAccount.id}.pdf`);
-                  if (res.ok) {
-                    const blob = await res.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `SAR_${selectedAccount.id}.pdf`;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                  }
-                } catch (e) {
-                  console.error(e);
-                }
-                setIsDownloadingSar(false);
-              }} 
-              disabled={isDownloadingSar}
-              className="px-6 py-2 bg-purple-600/20 text-purple-400 border border-purple-500/50 rounded hover:bg-purple-600/30 transition font-medium flex items-center gap-2"
+              onClick={() => {
+                setIsSarModalOpen(true);
+              }}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white border border-blue-500/50`}
             >
-              <Download className={`w-4 h-4 ${isDownloadingSar ? 'animate-bounce' : ''}`} /> 
-              {isDownloadingSar ? 'Generating...' : 'Auto-Generate SAR'}
+              <FileText className={`w-4 h-4`} /> 
+              Preview SAR Form
             </button>
             
             <button onClick={closeReport} className="px-6 py-2 bg-[#222] text-gray-300 border border-[#333] rounded hover:bg-[#333] transition font-medium">
@@ -703,8 +686,33 @@ export default function Home() {
                     Suspicious Activity Report (SAR) - Pre-filled
                   </h2>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => window.print()} className="text-gray-700 hover:bg-gray-200 p-2 rounded flex items-center gap-1 text-xs font-medium">
-                      <Download className="w-4 h-4" /> Download PDF
+                    <button 
+                      onClick={async () => {
+                        setIsDownloadingSar(true);
+                        try {
+                          const res = await fetch(`https://mulenet-backend.onrender.com/sar/${selectedAccount.id}.pdf`);
+                          if (res.ok) {
+                            const blob = await res.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `SAR_${selectedAccount.id}.pdf`;
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                          } else {
+                            window.print(); // Fallback to frontend print if backend fails
+                          }
+                        } catch (e) {
+                          window.print(); // Fallback to frontend print
+                        }
+                        setIsDownloadingSar(false);
+                      }} 
+                      disabled={isDownloadingSar}
+                      className="text-gray-700 hover:bg-gray-200 p-2 rounded flex items-center gap-1 text-xs font-medium"
+                    >
+                      <Download className={`w-4 h-4 ${isDownloadingSar ? 'animate-bounce' : ''}`} /> 
+                      {isDownloadingSar ? 'Downloading...' : 'Download PDF'}
                     </button>
                     <button onClick={() => setIsSarModalOpen(false)} className="text-gray-500 hover:text-red-500 transition-colors p-2 rounded hover:bg-gray-200">
                       <X className="w-5 h-5" />
@@ -952,6 +960,17 @@ export default function Home() {
                 >
                   Previous
                 </button>
+                
+                {Array.from({ length: Math.ceil(filteredAccounts.length / 100) }).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-3 py-1 rounded text-sm ${currentPage === i + 1 ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-[#222] text-gray-300 hover:bg-[#333]'}`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                
                 <button 
                   onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredAccounts.length / 100), prev + 1))}
                   disabled={currentPage >= Math.ceil(filteredAccounts.length / 100)}

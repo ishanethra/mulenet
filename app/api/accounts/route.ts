@@ -15,8 +15,7 @@ export async function GET() {
     const fileData = fs.readFileSync(jsonPath, 'utf-8');
     const accounts = JSON.parse(fileData);
     
-    // Sort just in case, though they are already critical
-    accounts.sort((a: any, b: any) => b.score - a.score);
+    // Dataset is already randomly shuffled from python script to ensure mixed presentation
     
     return NextResponse.json(accounts);
   } catch (error) {
