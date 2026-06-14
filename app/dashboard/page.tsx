@@ -53,6 +53,7 @@ export default function Home() {
   const [dynamicAccounts, setDynamicAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isReportView, setIsReportView] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<any>(null);
 
@@ -897,7 +898,7 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {filteredAccounts.slice(0, 50).map((acct, idx) => (
+                {filteredAccounts.slice((currentPage - 1) * 100, currentPage * 100).map((acct, idx) => (
                   <tr key={idx} className="border-b border-[#222] hover:bg-[#1a1a1a] transition-colors">
                     <td className="px-6 py-4 font-medium text-white">{acct.id}</td>
                     <td className="px-6 py-4">
@@ -907,11 +908,11 @@ export default function Home() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        (acct.priority === 'High' || acct.priority === 'P1') ? 'bg-[#2a1215] text-[#ff8a8a] border border-[#4a1c1c]' : 
-                        (acct.priority === 'Medium' || acct.priority === 'P2') ? 'bg-[#261810] text-[#ffb076] border border-[#402414]' : 
+                        (acct.priority === 'High' || acct.priority === 'P1' || acct.score >= 70) ? 'bg-[#2a1215] text-[#ff8a8a] border border-[#4a1c1c]' : 
+                        (acct.priority === 'Medium' || acct.priority === 'P2' || acct.score >= 40) ? 'bg-[#261810] text-[#ffb076] border border-[#402414]' : 
                         'bg-[#121a24] text-[#8ab4f8] border border-[#1a2c42]'
                       }`}>
-                        {acct.priority === 'P1' ? 'High' : acct.priority === 'P2' ? 'Medium' : acct.priority === 'P3' ? 'Low' : acct.priority}
+                        {acct.score >= 70 ? 'High' : acct.score >= 40 ? 'Medium' : 'Low'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-gray-300 truncate max-w-[200px]">{acct.typology}</td>
@@ -936,6 +937,31 @@ export default function Home() {
               </tbody>
             </table>
           </div>
+          
+          {/* Pagination Controls */}
+          {filteredAccounts.length > 100 && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-[#222]">
+              <div className="text-sm text-gray-400">
+                Showing <span className="text-white font-medium">{(currentPage - 1) * 100 + 1}</span> to <span className="text-white font-medium">{Math.min(currentPage * 100, filteredAccounts.length)}</span> of <span className="text-white font-medium">{filteredAccounts.length}</span> results
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 rounded bg-[#222] text-sm text-gray-300 hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filteredAccounts.length / 100), prev + 1))}
+                  disabled={currentPage >= Math.ceil(filteredAccounts.length / 100)}
+                  className="px-3 py-1 rounded bg-[#222] text-sm text-gray-300 hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
       </div>
